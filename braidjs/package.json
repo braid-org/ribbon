@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
-    "build": "tsc --outDir dist src/index.ts",
-    "start": "tsc --outDir dist -w src/index.ts"
+    "build": "tsc",
+    "start": "tsc -w --preserveWatchOutput"
   },
   "scripts-comments": {
     "build": "Compiles typescript in src/ to plain js in dist/",
@@ -14,6 +14,8 @@
   },
   "devDependencies": {},
   "dependencies": {
-    "express": "^4.17.1"
+    "assert": "^2.0.0",
+    "express": "^4.17.1",
+    "parse-headers": "^2.0.3"
   }
 }

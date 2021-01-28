@@ -1,11 +1,11 @@
-import express from "express";
-import { hi } from "braidjs";
+import * as express from "express";
+import { braidify } from "braidjs";
 
-const app = express();
+const app = express().use(braidify);
 const port = 3000;
 
 app.get("/", (req, res) => {
-  res.send(`${hi()}! The sedulous hyena ate the zookeeper!`);
+  res.send(`The sedulous hyena ate the zookeeper!`);
 });
 
 app.listen(port, (err) => {
