@@ -12,9 +12,7 @@
     "build": "Compiles typescript in src/ to plain js in dist/",
     "start": "Watch for typescript files in src/ and compile to plain js in dist/"
   },
-  "devDependencies": {
-    "typescript": "^4.1.3"
-  },
+  "devDependencies": {},
   "dependencies": {
     "express": "^4.17.1"
   }
