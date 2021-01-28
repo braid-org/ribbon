@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "workspaces": [
+    "braidjs",
+    "examples/client",
+    "examples/server"
+  ]
+}
