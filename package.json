@@ -13,6 +13,6 @@
     "quoteProps": "consistent"
   },
   "scripts": {
-    "start": "concurrently 'yarn workspace braidjs start' 'yarn workspace braidjs-server-example start'"
+    "start": "concurrently 'yarn workspace braidjs start' 'yarn workspace braidjs-server-example start' 'yarn workspace braidjs-client-example start'"
   }
 }
