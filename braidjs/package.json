@@ -14,8 +14,11 @@
   },
   "devDependencies": {},
   "dependencies": {
+    "@types/node": "^14.14.22",
     "assert": "^2.0.0",
     "express": "^4.17.1",
+    "isomorphic-fetch": "^3.0.0",
+    "ministreamiterator": "^1.0.0",
     "parse-headers": "^2.0.3"
   }
 }

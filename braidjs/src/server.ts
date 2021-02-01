@@ -1,221 +1,168 @@
-import * as parseHeaders from "parse-headers";
-import * as assert from "assert";
+import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from "http";
+import asyncstream, { Stream } from "ministreamiterator";
 
-// Write an array of patches into the pseudoheader format.
+interface StateServerOpts<T> {
+  /**
+   * Optional headers from request, so we can parse out requested patch type
+   * and requested version
+   */
+  // reqHeaders?: IncomingHttpHeaders,
 
-export function generate_patches(res, patches) {
-  var patches_as_strings = false;
-  // This will return something like:
-  // Patches: n
-  //
-  // content-length: 14 // patch #1
-  // content-range: json=.range (or) json=[indices]
-  //
-  // ["json object"]
-  //
-  // content-length: x // patch #2
-  // ...
-  let out = `Patches: ${patches.length}\n`;
-  for (let patch of patches) {
-    out += "\n";
-    if (patches_as_strings) {
-      // This should be rewritten to use sync9's patch parser.
-      var split = patch.match(/(.*?)\s*=\s*(.*)/);
-      assert(split.length == 3);
-      var range = split[1];
-      var change = split[2];
-    } else {
-      console.log("patch is", patch);
-      var range = patch.range,
-        change = patch.content;
-      // if (res.getHeader('content-type') === 'application/json')
-      //     change = JSON.stringify(change)
-    }
-    console.log({ range, change });
+  initialVerson?: string;
+  initialValue?: T;
 
-    out += `content-length: ${change.length}\n`;
-    out += `content-range: json=${range}\n`;
-    out += "\n";
-    out += `${change}\n`;
-  }
-  return out;
+  /** The type of the referred content (content-type if you issued a GET on the resource) */
+  contentType?: string;
+
+  /** Defaults to snapshot - aka, each patch will contain a new copy of the data. */
+  patchType?: "snapshot" | "merge-object" | string;
+
+  // patchMode: 'loose' | 'strict' // ???
+
+  httpHeaders?: { [k: string]: string | any };
+
+  /**
+   * Optional event handler called when the peer disconnects
+   */
+  onclose?: () => void;
+
+  /**
+   * Send a heartbeat message every (seconds). Defaults to every 30 seconds.
+   * This is needed to avoid some browsers closing the connection automatically
+   * after a 1 minute timeout.
+   *
+   * Set to `null` to disable heartbeat messages.
+   */
+  heartbeatSecs?: number | null;
 }
 
-// This function reads num_patches in pseudoheader format from a
-// ReadableStream and then fires a callback when they're finished.
-export function parse_patches(req, cb) {
-  var num_patches = req.headers.patches,
-    stream = req;
-
-  let patches = [];
-  let buffer = "";
-  if (num_patches === 0) return cb(patches);
-
-  stream.on("data", function parse(chunk) {
-    while (patches.length < num_patches) {
-      // Merge the latest chunk into our buffer
-      buffer = buffer + chunk;
-
-      // We might have an extra newline at the start.  (mike: why?)
-      buffer = buffer.replace(/^\s+/, "");
-
-      // First parse the patch headers.  It ends with a double-newline.
-      // Let's see where that is.
-      var p_headers_length = buffer.indexOf("\n\n");
-
-      // Give up if we don't have a set of headers yet.
-      if (buffer.indexOf("\n\n") === -1) return;
-
-      // Now let's parse those headers.
-      var p_headers = parseHeaders(buffer.substring(0, p_headers_length));
-
-      // Content-length tells us how long the body of the patch will be.
-      // TODO: Support Transfer-Encoding: Chunked in addition to content-length?
-      assert(p_headers["content-length"]);
-      var body_length = parseInt(p_headers["content-length"]);
-
-      // Give up if we don't have the full patch yet.
-      if (buffer.length < p_headers_length + 2 + body_length) return;
-
-      // Assume that content-range is of the form 'json=.index'
-      var patch_range = p_headers["content-range"].startsWith("json=")
-        ? p_headers["content-range"].substring(5)
-        : p_headers["content-range"];
-      var patch_content = buffer.substring(
-        p_headers_length + 2,
-        p_headers_length + 2 + body_length
-      );
-
-      // console.log('headers is', req.headers)
-      // if (req.headers['content-type'] === 'application/json')
-      //     patch_content = JSON.parse(patch_content)
-
-      // We've got our patch!
-      patches.push({ range: patch_range, content: patch_content });
-
-      buffer = buffer.substring(p_headers_length + 2 + body_length);
-    }
-
-    // We got all the patches!  Pause the stream and tell the callback!
-    stream.pause();
-    cb(patches);
-  });
-  stream.on("end", () => {
-    // If the stream ends before we get everything, then return what we
-    // did receive
-    console.error("Stream ended!");
-    if (patches.length !== num_patches)
-      console.error(
-        `Got an incomplete PUT: ${patches.length}/${num_patches} patches were received`
-      );
-  });
+export interface MaybeFlushable {
+  flush?: () => void;
 }
 
-export function braidify(req, res, next) {
-  console.log("\n## Braidifying", req.method, req.url, req.headers.client);
+interface StateMessage {
+  headers?: { [k: string]: string | any };
+  data: string | Buffer; // encoded patch
+  version?: string;
+}
 
-  // First, declare that we support Patches and JSON ranges.
-  res.setHeader("Range-Request-Allow-Methods", "PATCH, PUT");
-  res.setHeader("Range-Request-Allow-Units", "json");
-  res.setHeader("Patches", "OK");
+const writeHeaders = (
+  stream: ServerResponse,
+  headers: Record<string, string>
+) => {
+  stream.write(
+    Object.entries(headers)
+      .map(([k, v]) => `${k}: ${v}\r\n`)
+      .join("") + "\r\n"
+  );
+};
 
-  // Extract braid info from headers
-  var version = req.headers.version && JSON.parse(req.headers.version),
-    parents =
-      req.headers.parents && JSON.parse("[" + req.headers.parents + "]"),
-    client = req.headers["client"],
-    url = req.url.substr(1);
+/*
 
-  // Parse the subscribe header as one of these forms:
-  //
-  //   keep-alive
-  //   keep-alive=number
-  //
-  var subscribe = req.headers.subscribe;
-  if (subscribe) {
-    let match = req.headers.subscribe.match(/keep-alive(=\w+)?/);
-    if (match)
-      subscribe = match[1]
-        ? { keep_alive: true }
-        : { keep_alive: parseInt(match[1]) };
-  }
+Switches:
 
-  // Define convenience variables
-  req.version = version;
-  req.parents = parents;
-  req.subscribe = subscribe;
+- Are we sending snapshots or are we sending patches?
+- When is the client up-to-date?
 
-  // Add the braidly request/response helper methods
-  res.sendVersion = (stuff) => send_version({ res: res, ...stuff });
-  res.sendVersion = (stuff) => send_version({ res: res, ...stuff });
-  req.patches = () =>
-    new Promise((done, err) => parse_patches(req, (patches) => done(patches)));
-  req.patchesJSON = () =>
-    new Promise((done, err) =>
-      parse_patches(req, (patches) =>
-        done(patches.map((p) => ({ ...p, content: JSON.parse(p.content) })))
-      )
-    );
-  req.startSubscription = res.startSubscription = function startSubscription(
-    args
-  ) {
-    console.log("Starting subscription!!");
-    console.log(
-      "Timeouts are:",
-      req.socket.server.timeout,
-      req.socket.server.keepAliveTimeout
-    );
+- The client can request changes from some specified version
+- And the updates can name a version
 
-    // Let's disable the timeouts
-    req.socket.server.timeout = 0.0;
-    req.setTimeout(0, (x) => console.log("Request timeout!", x));
-    res.setTimeout(0, (x) => console.log("Response timeout!", x));
+- Patch type can change per message (according to the current braid spec)
 
-    // We have a subscription!
-    res.statusCode = 209;
-    res.setHeader("subscribe", req.headers.subscribe);
-    res.setHeader("cache-control", "no-cache, no-transform");
-    res.setHeader("content-type", "application/json");
+- Client can send accepts-patch header to name which patch types it understands
 
-    var connected = true;
-    function disconnected() {
-      console.log(`Connection closed on ${req.url}`);
+*/
 
-      if (!connected) return;
-      connected = false;
+export type BraidStream = {
+  stream: Stream<StateMessage>;
+  append: (patch: any, version?: string) => void;
+};
 
-      // Now call the callback
-      if (args.onClose) args.onClose();
-    }
+export function braidStream<T>(
+  res: ServerResponse & MaybeFlushable,
+  opts: StateServerOpts<T> = {}
+) {
+  // These headers are sent both in the HTTP response and in the first SSE
+  // message, because there's no API for reading these headers back from
+  // EventSource in the browser.
 
-    res.on("close", disconnected);
-    res.on("finish", disconnected);
-    req.on("abort", disconnected);
+  const httpHeaders: Record<string, string> = {
+    "cache-control": "no-cache",
+    "connection": "keep-alive",
+    ...opts.httpHeaders,
   };
 
-  next();
-}
+  let contentType = opts.contentType ?? null;
+  if (contentType != null) httpHeaders["content-type"] = contentType;
+  if (opts.patchType) httpHeaders["patch-type"] = opts.patchType;
 
-export function send_version({ res, version, parents, patches, body }) {
-  console.log("sending version", { version, parents, patches, body });
-  if (body) assert(typeof body === "string");
-  (patches || []).forEach((p) => assert(typeof p.content === "string"));
-  if (version) res.write(`Version: ${JSON.stringify(version)}\n`);
-  if (parents && parents.length) {
-    res.write(`Parents: ${parents.map(JSON.stringify).join(", ")}\n`);
+  res.writeHead(209, "Subscription", httpHeaders);
+
+  let connected = true;
+
+  const stream = asyncstream<StateMessage>(() => {
+    connected = false;
+    res.end(); // will fire res.emit('close') if not already closed
+  });
+
+  res.once("close", () => {
+    connected = false;
+    stream.end();
+    opts.onclose?.();
+  });
+
+  // if (opts.heartbeatSecs !== null) {
+  //   ;(async () => {
+  //     // 30 second heartbeats to avoid timeouts
+  //     while (true) {
+  //       await new Promise(res => setTimeout(res, 30*1000))
+
+  //       if (!connected) break
+
+  //       res.write(`:\n`);
+  //       // res.write(`event: heartbeat\ndata: \n\n`);
+  //       // res.write(`data: {}\n\n`)
+  //       res.flush?.()
+  //     }
+  //   })()
+  // }
+  (async () => {
+    if (connected) {
+      for await (const val of stream.iter) {
+        if (!connected) break;
+        // console.log('got val', val)
+
+        const data = Buffer.from(`${val.data}\n`, "utf8");
+
+        const patchHeaders: Record<string, string> = {
+          // 'content-type': 'application/json',
+          // 'patch-type': 'snapshot',
+          "content-length": `${data.length}`,
+          ...val.headers,
+        };
+        if (val.version) patchHeaders["version"] = val.version;
+
+        writeHeaders(res, patchHeaders);
+        res.write(data);
+        res.flush?.();
+      }
+    }
+  })();
+
+  // let headersSent = false
+  const append = (patch: any, version?: string) => {
+    if (!connected) return;
+
+    let message: StateMessage = { data: patch };
+    if (version != null) message.version = version;
+
+    // console.log('append', message)
+    stream.append(message);
+  };
+
+  if (opts.initialValue !== undefined) {
+    append(opts.initialValue, opts.initialVerson);
   }
 
-  res.write("Content-Type: application/json\n");
-  res.write("Merge-Type: sync9\n");
-  if (patches) res.write(generate_patches(res, patches));
-  // adds its own newline
-  else if (body) {
-    // if (res.getHeader('content-type') === 'application/json')
-    //     body = JSON.stringify(body)
-    res.write("Content-Length: " + body.length + "\n");
-    res.write("\n" + body + "\n");
-  } else {
-    console.trace("Missing body or patches");
-  }
-  res.write("\n");
+  return { stream, append };
 }
