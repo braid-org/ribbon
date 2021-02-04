@@ -2,8 +2,8 @@
   "private": true,
   "workspaces": [
     "braidjs",
-    "examples/client",
-    "examples/server"
+    "client",
+    "server"
   ],
   "devDependencies": {
     "concurrently": "^5.3.0",

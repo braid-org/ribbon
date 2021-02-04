@@ -3,6 +3,12 @@ import { SubscribableValue } from "braidjs";
 import * as polka from "polka";
 import * as cors from "cors";
 
+const subscriptions = [
+  { url: "http://localhost:3001/alice/posts" },
+  { url: "http://localhost:3001/bob/posts" },
+  { url: "http://localhost:3001/charlie/posts" },
+];
+
 const posts = [
   { title: "hello." },
   { title: "Welcome to\nThe Braid." },
@@ -30,6 +36,10 @@ const port = 3000;
 app.get("/", (req, res) => {
   blog.respond(req, res);
 });
+
+// app.patch("/", (req, res) => {
+//   blog.append(req, res, {title:"new blog post",body:"stuff"})
+// })
 
 app.listen(port, (err) => {
   if (err) {
