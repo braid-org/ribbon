@@ -1,20 +1,19 @@
 <script>
   import Post from "./Post.svelte";
   import Background from "./Background.svelte";
-  import { listen } from "braidjs";
+  import { writable } from "svelte/store";
+  import { ArrayResource } from "./braid";
 
-  let posts = [];
-  (async () => {
-    for await (const { value } of listen("http://localhost:3000/")) {
-      posts = JSON.parse(value);
-    }
-  })();
+  const posts = writable([]);
+
+  const url = new URL("/", "http://localhost:3000");
+  new ArrayResource(url, posts);
 </script>
 
 <Background />
 
 <content>
-  {#each posts as post}
+  {#each $posts as post}
     <Post title={post.title} body={post.body} />
   {/each}
 </content>

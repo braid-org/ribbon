@@ -1,13 +1,14 @@
-import { SubscribableValue } from "braidjs";
+import polka from "polka";
+import cors from "cors";
 
-import * as polka from "polka";
-import * as cors from "cors";
+import braidify from "./braid/braid-server";
+import { Resource } from "./braid";
 
-const subscriptions = [
-  { url: "http://localhost:3001/alice/posts" },
-  { url: "http://localhost:3001/bob/posts" },
-  { url: "http://localhost:3001/charlie/posts" },
-];
+// const subscriptions = [
+//   { url: "http://localhost:3001/alice/posts" },
+//   { url: "http://localhost:3001/bob/posts" },
+//   { url: "http://localhost:3001/charlie/posts" },
+// ];
 
 const posts = [
   { title: "hello." },
@@ -27,19 +28,27 @@ const posts = [
   },
 ];
 
-const blog = new SubscribableValue(posts);
-// published: new Date(Date.UTC(2021, 1, 1, 18, 30, 0)).toUTCString(),
+const blog: Resource<Array<any>> = new Resource(posts);
 
-const app = polka().use(cors({ origin: true }));
+const app = polka()
+  .use(cors({ origin: true }))
+  .use(braidify);
 const port = 3000;
 
 app.get("/", (req, res) => {
   blog.respond(req, res);
 });
 
-// app.patch("/", (req, res) => {
-//   blog.append(req, res, {title:"new blog post",body:"stuff"})
-// })
+app.patch("/", async (req, res) => {
+  var patches = await req.patches();
+
+  // assert(patches.length === 1);
+  // assert(patches[0].range === "[-0:-0]");
+
+  console.log("patches", patches);
+  // blog.append(req, res, { title: "new blog post", body: "stuff" });
+  // blog.store.set((state) => [...state, { title: "hi" }]);
+});
 
 app.listen(port, (err) => {
   if (err) {

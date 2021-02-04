@@ -1,7 +1,6 @@
 {
   "private": true,
   "workspaces": [
-    "braidjs",
     "client",
     "server"
   ],
@@ -13,6 +12,6 @@
     "quoteProps": "consistent"
   },
   "scripts": {
-    "start": "concurrently 'yarn workspace braidjs start' 'yarn workspace braidjs-server-example start' 'yarn workspace braidjs-client-example start'"
+    "start": "concurrently 'yarn workspace braid-lib start' 'yarn workspace ribbon-server start' 'yarn workspace ribbon-client start'"
   }
 }
