@@ -10,9 +10,7 @@ import { Resource } from "./braid";
 //   { url: "http://localhost:3001/charlie/posts" },
 // ];
 
-const posts = [
-  { title: "hello." },
-  { title: "Welcome to\nThe Braid." },
+const initialPosts = [
   {
     title: "A microblog you own",
     body:
@@ -26,28 +24,37 @@ const posts = [
       `supports tweaking and sharing attention functions--no longer ` +
       `will you be subject to someone else's attention algorithm.`,
   },
+  { title: "Welcome to\nThe Braid." },
+  { title: "hello." },
 ];
 
-const blog: Resource<Array<any>> = new Resource(posts);
+const posts: Resource<Array<any>> = new Resource(initialPosts);
+const likes: Resource<Array<any>> = new Resource([]);
 
 const app = polka()
   .use(cors({ origin: true }))
   .use(braidify);
 const port = 3000;
 
-app.get("/", (req, res) => {
-  blog.respond(req, res);
+app.get("/posts", (req, res) => {
+  posts.respond(req, res);
 });
 
-app.patch("/", async (req, res) => {
+app.put("/posts", async (req, res) => {
   var patches = await req.patches();
 
-  // assert(patches.length === 1);
-  // assert(patches[0].range === "[-0:-0]");
+  if (patches.length === 1 && patches[0].range === "[-0:-0]") {
+    posts.store.set((state) => [...state, JSON.parse(patches[0].content)]);
+    res.statusCode = 200;
+    res.end();
+  } else {
+    res.statusCode = 400;
+    res.end("Only one patch, constrained to range [-0:-0] accepted");
+  }
+});
 
-  console.log("patches", patches);
-  // blog.append(req, res, { title: "new blog post", body: "stuff" });
-  // blog.store.set((state) => [...state, { title: "hi" }]);
+app.get("/likes", (req, res) => {
+  likes.respond(req, res);
 });
 
 app.listen(port, (err) => {

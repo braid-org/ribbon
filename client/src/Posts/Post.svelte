@@ -7,7 +7,7 @@
   }
 </script>
 
-<square class="soft-overflow" class:centered={!title || !body}>
+<square class="soft-overflow centered" class:centered={!title || !body}>
   {#if title}
     <div class="title" class:rainbow={body} class:attention={!body}>
       {#each getLines(title) as line}

@@ -1,28 +1,40 @@
 <script>
-  import Post from "./Post.svelte";
-  import Background from "./Background.svelte";
   import { writable } from "svelte/store";
   import { ArrayResource } from "./braid";
 
-  const posts = writable([]);
+  import Background from "./Background.svelte";
+  import PostsPage from "./Posts/PostsPage.svelte";
+  import LikesPage from "./Likes/LikesPage.svelte";
+  import Sidebar from "./Sidebar.svelte";
 
-  const url = new URL("/", "http://localhost:3000");
-  new ArrayResource(url, posts);
+  const posts = new ArrayResource(
+    new URL("/posts", "http://localhost:3000"),
+    writable([])
+  );
+
+  const likes = new ArrayResource(
+    new URL("/likes", "http://localhost:3000"),
+    writable([])
+  );
+
+  let page = "posts";
 </script>
 
 <Background />
 
-<content>
-  {#each $posts as post}
-    <Post title={post.title} body={post.body} />
-  {/each}
-</content>
+<Sidebar bind:page />
+
+<app>
+  {#if page === "posts"}
+    <PostsPage resource={posts} />
+  {:else if page === "likes"}
+    <LikesPage resource={likes} />
+  {/if}
+</app>
 
 <style>
-  content {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: 48px;
+  app {
+    display: block;
+    margin-left: 160px;
   }
 </style>
