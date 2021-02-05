@@ -1,4 +1,5 @@
 <script>
+  import { slide } from "svelte/transition";
   import NewPost from "./NewPost.svelte";
   import PostList from "./PostList.svelte";
   import NewPostButton from "./NewPostButton.svelte";
@@ -17,7 +18,9 @@
 <NewPostButton bind:visible={newPostVisible} />
 
 {#if newPostVisible}
-  <NewPost on:post={onPost} />
+  <div transition:slide>
+    <NewPost on:post={onPost} />
+  </div>
 {/if}
 
 <PostList {resource} />

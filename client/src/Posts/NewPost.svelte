@@ -8,6 +8,7 @@
 </script>
 
 <bar>
+  <h1>New Post</h1>
   <input bind:value={title} placeholder="title" />
   <textarea bind:value={body} placeholder="post" />
   <button on:click={() => dispatch("post", { title, body })}>Post</button>
@@ -22,7 +23,13 @@
 
     border-radius: 16px;
     min-width: 600px;
-    margin: 32px;
+    margin: -32px 32px 32px 32px;
+  }
+
+  h1 {
+    font-family: "Poppins", sans-serif;
+    font-size: 32px;
+    color: white;
   }
 
   input,
