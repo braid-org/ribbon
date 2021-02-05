@@ -3,19 +3,26 @@
   import { ArrayResource } from "./braid";
 
   import Background from "./Background.svelte";
-  import PostsPage from "./Posts/PostsPage.svelte";
-  import LikesPage from "./Likes/LikesPage.svelte";
   import Sidebar from "./Sidebar.svelte";
 
-  const posts = new ArrayResource(
-    new URL("/posts", "http://localhost:3000"),
-    writable([])
-  );
+  import PostsPage from "./Posts/PostsPage.svelte";
+  import LikesPage from "./Likes/LikesPage.svelte";
+  import SettingsPage from "./Settings/SettingsPage.svelte";
 
-  const likes = new ArrayResource(
-    new URL("/likes", "http://localhost:3000"),
-    writable([])
-  );
+  import { config } from "./Settings/config";
+
+  let posts, likes;
+  let serverUrl = config.serverUrl;
+
+  $: {
+    if (posts) posts.cancel();
+    posts = new ArrayResource(new URL("/posts", $serverUrl), writable([]));
+  }
+
+  $: {
+    if (likes) likes.cancel();
+    likes = new ArrayResource(new URL("/likes", $serverUrl), writable([]));
+  }
 
   let page = "posts";
 </script>
@@ -29,6 +36,8 @@
     <PostsPage resource={posts} />
   {:else if page === "likes"}
     <LikesPage resource={likes} />
+  {:else if page === "settings"}
+    <SettingsPage on:done={() => (page = "posts")} />
   {/if}
 </app>
 

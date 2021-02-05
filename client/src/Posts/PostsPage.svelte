@@ -6,6 +6,9 @@
 
   export let resource;
 
+  let connectState;
+  $: connectState = resource.connectState;
+
   let newPostVisible = false;
 
   function onPost({ detail }) {
@@ -23,4 +26,33 @@
   </div>
 {/if}
 
-<PostList {resource} />
+{#if $connectState === "connected"}
+  <PostList {resource} />
+{:else if $connectState === "init"}
+  <status transition:slide> Loading... </status>
+{:else}
+  <status>
+    Not connected: <span class:error={$connectState === "error"}
+      >{$connectState}</span
+    >
+  </status>
+{/if}
+
+<style>
+  status {
+    display: flex;
+    justify-content: center;
+
+    color: white;
+    font-size: 28px;
+    font-weight: 700;
+    margin-top: 64px;
+  }
+
+  span {
+    padding-left: 16px;
+  }
+  .error {
+    color: var(--cherry);
+  }
+</style>

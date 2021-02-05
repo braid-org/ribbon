@@ -62,7 +62,6 @@
   }
 
   .title {
-    font-family: "Poppins", sans-serif;
     font-weight: 700;
     font-size: 26px;
     text-align: center;
@@ -74,7 +73,7 @@
   .title.attention {
     font-size: 36px;
     line-height: 48px;
-    color: rgba(243, 19, 105, 1);
+    color: var(--cherry);
   }
 
   .title.rainbow {
@@ -91,7 +90,6 @@
 
   .body {
     color: white;
-    font-family: "Poppins", sans-serif;
     font-weight: 300;
     font-size: 20px;
   }

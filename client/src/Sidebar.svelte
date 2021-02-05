@@ -1,26 +1,29 @@
 <script>
   import FaBlog from "svelte-icons/fa/FaBlog.svelte";
   import FaRegThumbsUp from "svelte-icons/fa/FaRegThumbsUp.svelte";
+  import FaPowerOff from "svelte-icons/fa/FaPowerOff.svelte";
 
   export let page;
 
   const switchPage = (newPage) => () => {
     page = newPage;
   };
+
+  const pages = [
+    { id: "posts", icon: FaBlog },
+    { id: "likes", icon: FaRegThumbsUp },
+    { id: "settings", icon: FaPowerOff, end: true },
+  ];
 </script>
 
 <sidebar>
-  <button on:click={switchPage("posts")}>
-    <icon class:chosen={page === "posts"}>
-      <FaBlog />
-    </icon>
-  </button>
-
-  <button on:click={switchPage("likes")}>
-    <icon class:chosen={page === "likes"}>
-      <FaRegThumbsUp />
-    </icon>
-  </button>
+  {#each pages as pg}
+    <button on:click={switchPage(pg.id)} class:end={pg.end}>
+      <icon class:chosen={page === pg.id}>
+        <svelte:component this={pg.icon} />
+      </icon>
+    </button>
+  {/each}
 </sidebar>
 
 <style>
@@ -49,6 +52,10 @@
     width: 128px;
     height: 128px;
   }
+  button.end {
+    margin-top: auto;
+    margin-bottom: 16px;
+  }
 
   icon {
     color: rgba(210, 210, 210, 1);
@@ -64,6 +71,6 @@
   }
 
   icon.chosen {
-    color: rgba(243, 19, 105, 1);
+    color: var(--cherry);
   }
 </style>

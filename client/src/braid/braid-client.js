@@ -1,7 +1,9 @@
 var client = Math.random().toString(36).substr(2);
-var abort_controller = new AbortController();
 
 export function braid_fetch(url, options = {}, onversion, onclose) {
+  let shouldCancel = false;
+  const abortControl = new AbortController();
+
   // Todo: when reconnecting, this needs a way of asking to continue where
   // parents left off.
   //
@@ -11,7 +13,7 @@ export function braid_fetch(url, options = {}, onversion, onclose) {
   if (!onclose) onclose = () => console.warn(`Goodbye!`);
 
   // Create the headers object
-  var headers = { client: client };
+  var headers = { "client": client, "Cache-Control": "no-cache, no-transform" };
   if (options.version) headers.version = JSON.stringify(options.version);
   if (options.parents)
     headers.parents = options.parents.map(JSON.stringify).join(", ");
@@ -23,12 +25,14 @@ export function braid_fetch(url, options = {}, onversion, onclose) {
 
   // Send the underlying fetch request
   function go() {
+    if (shouldCancel) return;
+
     console.log(`Fetching ${url}`);
     fetch(url, {
       method: "GET",
       mode: "cors",
       headers: new Headers(headers),
-      signal: abort_controller.signal,
+      signal: abortControl.signal,
     })
       .then(function (res) {
         if (res.ok) {
@@ -42,12 +46,18 @@ export function braid_fetch(url, options = {}, onversion, onclose) {
         }
       })
       .catch((err) => {
-        //console.error("GET fetch failed: ", err)
+        console.error("GET fetch failed: ", err);
         onclose();
+
         setTimeout(go, 5000);
       });
   }
   go();
+
+  return () => {
+    abortControl.abort();
+    shouldCancel = true;
+  };
 }
 
 // Parse a stream of versions from the incoming bytes

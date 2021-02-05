@@ -1,26 +1,43 @@
-import { Writable } from "svelte/store";
+import { writable, Writable } from "svelte/store";
 import { braid_fetch, braid_put } from "./braid-client";
+
+type ConnectionState = "init" | "connected" | "disconnected" | "error";
 
 export class ArrayResource<T> {
   version: number;
   url: URL;
   store: Writable<Array<T>>;
+  connectState: Writable<ConnectionState>;
+  state: ConnectionState;
+  cancel: Function;
 
   constructor(url: URL, store: Writable<Array<T>>) {
     this.version = 0;
     this.url = url;
     this.store = store;
-
-    braid_fetch(url, { subscribe: { keep_alive: true } }, (response) => {
-      this.version = response.version;
-
-      // When we receive updates, they might come in the form of patches:
-      if (response.patches) {
-        this.applyPatches(response.patches);
-      } else {
-        this.setRaw(response.body);
-      }
+    this.connectState = writable("init");
+    this.connectState.subscribe((state) => {
+      this.state = state;
     });
+
+    this.cancel = braid_fetch(
+      url,
+      { subscribe: { keep_alive: true } },
+      (response) => {
+        this.version = response.version;
+        this.connectState.set("connected");
+
+        // When we receive updates, they might come in the form of patches:
+        if (response.patches) {
+          this.applyPatches(response.patches);
+        } else {
+          this.setRaw(response.body);
+        }
+      },
+      () => {
+        this.connectState.set("error");
+      }
+    );
   }
 
   setRaw(jsonValue: string) {

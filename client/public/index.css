@@ -1,10 +1,14 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap");
 
+:root {
+  --cherry: rgba(243, 19, 105, 1);
+}
+
 html {
   height: 100%;
 }
 
 body {
-  font-family: sans-serif;
+  font-family: "Poppins", sans-serif;
 }

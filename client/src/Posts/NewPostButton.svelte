@@ -17,7 +17,7 @@
     <Icon color={visible ? highlight : "white"}><FaPenSquare /></Icon>
   </SpinButton>
   {#if !visible}
-    <lbl>New Post</lbl>
+    <lbl on:click={toggleNewPost}>New Post</lbl>
   {/if}
 </div>
 
@@ -30,10 +30,12 @@
     align-items: center;
     margin-left: 16px;
 
-    font-family: "Poppins", sans-serif;
+    /* font-family: "Poppins", sans-serif; */
     font-weight: 700;
     font-size: 26px;
 
     color: white;
+
+    cursor: pointer;
   }
 </style>
