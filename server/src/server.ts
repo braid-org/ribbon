@@ -21,8 +21,8 @@ const initialPosts = [
   {
     body:
       `Share your life, and share how you see life. This microblog ` +
-      `supports tweaking and sharing attention functions--no longer ` +
-      `will you be subject to someone else's attention algorithm.`,
+      `lets you share attention functions--find the signal without being ` +
+      `subject to someone else's attention algorithm.`,
   },
   { title: "Welcome to\nThe Braid." },
   { title: "hello." },
@@ -34,7 +34,7 @@ const likes: Resource<Array<any>> = new Resource([]);
 const app = polka()
   .use(cors({ origin: true }))
   .use(braidify);
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.get("/posts", (req, res) => {
   posts.respond(req, res);
