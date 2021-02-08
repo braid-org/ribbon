@@ -15,6 +15,6 @@
     "quoteProps": "consistent"
   },
   "scripts": {
-    "start": "concurrently 'yarn workspace braid-lib start' 'yarn workspace ribbon-server start' 'yarn workspace ribbon-client start'"
+    "start": "concurrently 'yarn workspace ribbon-server start' 'yarn workspace ribbon-client start'"
   }
 }
