@@ -1,1 +1,1 @@
-export { Resource } from "./Resource";
+export { Resource, ListResource } from "./Resource";

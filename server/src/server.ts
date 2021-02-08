@@ -2,7 +2,7 @@ import polka from "polka";
 import cors from "cors";
 
 import braidify from "./braid/braid-server";
-import { Resource } from "./braid";
+import { ListResource } from "./braid";
 
 // const subscriptions = [
 //   { url: "http://localhost:3001/alice/posts" },
@@ -28,8 +28,8 @@ const initialPosts = [
   { title: "hello." },
 ];
 
-const posts: Resource<Array<any>> = new Resource(initialPosts);
-const likes: Resource<Array<any>> = new Resource([]);
+const posts: ListResource<any> = new ListResource();
+const likes: ListResource<any> = new ListResource();
 
 const app = polka()
   .use(cors({ origin: true }))
@@ -37,24 +37,19 @@ const app = polka()
 const port = process.env.PORT || 3000;
 
 app.get("/posts", (req, res) => {
-  posts.respond(req, res);
+  posts.get(req, res);
 });
 
-app.put("/posts", async (req, res) => {
-  var patches = await req.patches();
-
-  if (patches.length === 1 && patches[0].range === "[-0:-0]") {
-    posts.store.set((state) => [...state, JSON.parse(patches[0].content)]);
-    res.statusCode = 200;
-    res.end();
-  } else {
-    res.statusCode = 400;
-    res.end("Only one patch, constrained to range [-0:-0] accepted");
-  }
+app.put("/posts", (req, res) => {
+  posts.patch(req, res);
 });
 
 app.get("/likes", (req, res) => {
-  likes.respond(req, res);
+  likes.get(req, res);
+});
+
+app.get("/likes", (req, res) => {
+  likes.patch(req, res);
 });
 
 app.listen(port, (err) => {

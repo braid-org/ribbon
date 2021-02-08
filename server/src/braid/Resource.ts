@@ -49,7 +49,7 @@ export class Resource<T> {
     });
   }
 
-  respond(req, response: ServerResponsePlusBraid) {
+  get(req, response: ServerResponsePlusBraid) {
     const currentValue = this.store.get();
 
     response.setHeader("content-type", "application/json");
@@ -65,6 +65,25 @@ export class Resource<T> {
     } else {
       response.statusCode = 200;
       response.end(JSON.stringify(currentValue));
+    }
+  }
+}
+
+export class ListResource<T> extends Resource<Array<T>> {
+  constructor(list: Array<T> = []) {
+    super(list);
+  }
+
+  async patch(req, response: ServerResponsePlusBraid) {
+    var patches = await req.patches();
+
+    if (patches.length === 1 && patches[0].range === "[-0:-0]") {
+      this.store.set((state) => [...state, JSON.parse(patches[0].content)]);
+      response.statusCode = 200;
+      response.end();
+    } else {
+      response.statusCode = 400;
+      response.end("Only one patch, constrained to range [-0:-0] accepted");
     }
   }
 }
