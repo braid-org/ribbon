@@ -1,22 +1,35 @@
 <script>
+  import DOMPurify from "dompurify";
+  import anchorme from "anchorme";
+
   export let title;
   export let body;
 
-  function getLines(text) {
-    return text.split("\n");
+  function format(text) {
+    const cleanText = DOMPurify.sanitize(text);
+    return anchorme({
+      input: cleanText,
+      options: {
+        truncate: 30,
+        middleTruncation: true,
+        attributes: {
+          target: "_blank",
+        },
+      },
+    });
   }
 </script>
 
 <square class="soft-overflow centered" class:centered={!title || !body}>
   {#if title}
     <div class="title" class:rainbow={body} class:attention={!body}>
-      {#each getLines(title) as line}
-        {line}<br />
-      {/each}
+      {@html format(title)}
     </div>
   {/if}
   {#if body}
-    <div class="body" class:paragraph={!title}>{body}</div>
+    <div class="body" class:paragraph={!title}>
+      {@html format(body)}
+    </div>
   {/if}
 </square>
 

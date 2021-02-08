@@ -12,3 +12,9 @@ html {
 body {
   font-family: "Poppins", sans-serif;
 }
+
+a,
+a:visited {
+  color: var(--cherry);
+  font-weight: 700;
+}
