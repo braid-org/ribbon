@@ -23,7 +23,7 @@
     align-items: center;
 
     border-radius: 16px;
-    min-width: 600px;
+    min-width: 360px;
     margin: -32px 32px 32px 32px;
   }
 
@@ -47,12 +47,17 @@
   }
 
   input {
-    width: 500px;
+    width: 100%;
     height: 40px;
   }
 
   textarea {
-    width: 500px;
+    width: 100%;
     height: 120px;
+  }
+
+  @media only screen and (max-width: 600px) {
+    bar {
+    }
   }
 </style>

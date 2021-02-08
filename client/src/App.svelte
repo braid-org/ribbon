@@ -46,4 +46,10 @@
     display: block;
     margin-left: 160px;
   }
+  @media only screen and (max-width: 600px) {
+    app {
+      margin-left: 0;
+      margin-top: 88px;
+    }
+  }
 </style>

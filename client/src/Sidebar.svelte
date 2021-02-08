@@ -73,4 +73,37 @@
   icon.chosen {
     color: var(--cherry);
   }
+
+  @media only screen and (max-width: 600px) {
+    sidebar {
+      width: 100%;
+      height: 64px;
+      padding: 8px;
+      flex-direction: row;
+      background-color: rgba(0, 0, 0, 1);
+      background: rgb(50, 50, 50);
+      background: linear-gradient(
+        124deg,
+        rgba(50, 50, 50, 0.9) 0%,
+        rgba(29, 29, 29, 0.9) 100%
+      );
+    }
+    button {
+      width: 64px;
+      height: 64px;
+    }
+    button.end {
+      margin-left: auto;
+      margin-right: 32px;
+    }
+
+    icon {
+      width: 40px;
+      height: 40px;
+    }
+    icon:hover {
+      width: 58px;
+      height: 58px;
+    }
+  }
 </style>
