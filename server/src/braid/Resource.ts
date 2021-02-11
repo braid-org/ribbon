@@ -2,25 +2,47 @@ import { ServerResponse } from "http";
 
 import { writable, WritableStore } from "./WritableStore";
 import { hash } from "./hash";
+import bodyParser from "body-parser";
 
-type BraidResponse = {
+const jsonParse = bodyParser.json();
+const getBodyAsJson = (req, res) => {
+  return new Promise((resolve, reject) => {
+    try {
+      jsonParse(req, res, () => {
+        resolve(req.body);
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export type BraidResponse = {
   startSubscription: Function;
   sendVersion: Function;
 };
 
-type ServerResponsePlusBraid = ServerResponse & BraidResponse;
+export type ServerResponsePlusBraid = ServerResponse & BraidResponse;
+
+export type GetUrl<T> = (item: T) => string;
 
 export class Resource<T> {
   version: number;
   store: WritableStore<T>;
   subscriptions: Record<string, ServerResponsePlusBraid>;
+  getUrl: GetUrl<T>;
 
-  constructor(initialValue: T) {
+  constructor(getUrl: GetUrl<T>, initialValue: T) {
     this.version = 0;
     this.store = writable(initialValue);
     this.subscriptions = {};
+    this.getUrl = getUrl;
 
     this.connectStoreToSubscriptions();
+  }
+
+  get url() {
+    return this.getUrl(this.store.get());
   }
 
   connectStoreToSubscriptions() {
@@ -43,13 +65,16 @@ export class Resource<T> {
   }
 
   sendValue(response: ServerResponsePlusBraid, version: number, value: T) {
+    console.log("sendValue", JSON.stringify(value));
     response.sendVersion({
       version,
       body: JSON.stringify(value),
     });
   }
 
-  get(req, response: ServerResponsePlusBraid) {
+  // If the request is a regular GET, treat it as a one-time response.
+  // If the request is a Subscribe-GET, add to subscriptions pool
+  subscribe(req, response: ServerResponsePlusBraid) {
     const currentValue = this.store.get();
 
     response.setHeader("content-type", "application/json");
@@ -67,23 +92,26 @@ export class Resource<T> {
       response.end(JSON.stringify(currentValue));
     }
   }
-}
-
-export class ListResource<T> extends Resource<Array<T>> {
-  constructor(list: Array<T> = []) {
-    super(list);
-  }
 
   async patch(req, response: ServerResponsePlusBraid) {
-    var patches = await req.patches();
-
-    if (patches.length === 1 && patches[0].range === "[-0:-0]") {
-      this.store.set((state) => [...state, JSON.parse(patches[0].content)]);
+    if (req.headers["patches"]) {
+      const error = `Resource#patch not yet supported`;
+      console.warn(error);
+      // var patches = await req.patches();
+      // TODO: support braid patches
+      response.statusCode = 400;
+      response.end(
+        JSON.stringify({
+          error,
+        })
+      );
+    } else {
+      const json: T = (await getBodyAsJson(req, response)) as T;
+      this.store.update(($value) =>
+        Object.assign(json, { index: ($value as any).index })
+      );
       response.statusCode = 200;
       response.end();
-    } else {
-      response.statusCode = 400;
-      response.end("Only one patch, constrained to range [-0:-0] accepted");
     }
   }
 }

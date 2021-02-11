@@ -1,6 +1,6 @@
 <script>
   import { writable } from "svelte/store";
-  import { ArrayResource } from "./braid";
+  import { Resource } from "./braid";
 
   import Background from "./Background.svelte";
   import Sidebar from "./Sidebar.svelte";
@@ -16,13 +16,15 @@
 
   $: {
     if (posts) posts.cancel();
-    posts = new ArrayResource(new URL("/posts", $serverUrl), writable([]));
+    posts = new Resource(new URL("/posts", $serverUrl), []);
   }
 
-  $: {
-    if (likes) likes.cancel();
-    likes = new ArrayResource(new URL("/likes", $serverUrl), writable([]));
-  }
+  $: console.log("posts", posts);
+
+  // $: {
+  //   if (likes) likes.cancel();
+  //   likes = new ArrayResource(new URL("/likes", $serverUrl), writable([]));
+  // }
 
   let page = "posts";
 </script>
@@ -33,9 +35,10 @@
 
 <app>
   {#if page === "posts"}
-    <PostsPage resource={posts} />
+    <PostsPage {posts} />
   {:else if page === "likes"}
-    <LikesPage resource={likes} />
+    likes
+    <!-- <LikesPage resource={likes} /> -->
   {:else if page === "settings"}
     <SettingsPage on:done={() => (page = "posts")} />
   {/if}

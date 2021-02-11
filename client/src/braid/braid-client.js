@@ -27,7 +27,7 @@ export function braid_fetch(url, options = {}, onversion, onclose) {
   function go() {
     if (shouldCancel) return;
 
-    console.log(`Fetching ${url}`);
+    // console.log(`Fetching ${url}`);
     fetch(url, {
       method: "GET",
       mode: "cors",
@@ -36,7 +36,7 @@ export function braid_fetch(url, options = {}, onversion, onclose) {
     })
       .then(function (res) {
         if (res.ok) {
-          console.log("Fetched");
+          // console.log("Fetched");
           parse_response(res.body, onversion, onclose, () =>
             setTimeout(go, 5000)
           );
@@ -75,19 +75,19 @@ function parse_response(stream, on_message, on_finished, on_error) {
     .then(function read({ done, value }) {
       // First check if this connection has been closed!
       if (done) {
-        if (input_buffer.trim().length)
-          console.debug(
-            "Connection was closed. Remaining data in buffer:",
-            input_buffer
-          );
-        else console.debug("Connection was closed. Buffer was empty.");
+        // if (input_buffer.trim().length)
+        //   console.debug(
+        //     "Connection was closed. Remaining data in buffer:",
+        //     input_buffer
+        //   );
+        // else console.debug("Connection was closed. Buffer was empty.");
         on_finished();
         return;
       }
 
       // Transform this chunk into text that we can work with.
       var chunk_string = decoder.decode(value);
-      console.debug("Received text", chunk_string);
+      // console.debug("Received text", chunk_string);
 
       // Add this chunk to our input buffer
       input_buffer = input_buffer + chunk_string;
@@ -119,7 +119,7 @@ function parse_response(stream, on_message, on_finished, on_error) {
 
         if (parse_body()) {
           // Now we have a complete message!
-          console.debug("Patch parse Success:", parsed_patches);
+          // console.debug("Patch parse Success:", parsed_patches);
 
           // First, the parameters for the callback
           let version = JSON.parse(parsed_headers.version || "null"),
@@ -127,12 +127,12 @@ function parse_response(stream, on_message, on_finished, on_error) {
             parents = parsed_headers.parents;
           if (parsed_headers.parents)
             parents = JSON.parse("[" + parsed_headers.parents + "]");
-          console.debug("Assembled complete message: ", {
-            version,
-            patches,
-            parents,
-            on_message,
-          });
+          // console.debug("Assembled complete message: ", {
+          //   version,
+          //   patches,
+          //   parents,
+          //   on_message,
+          // });
 
           // Now tell everyone!
           on_message({ version, patches, parents });
@@ -143,20 +143,20 @@ function parse_response(stream, on_message, on_finished, on_error) {
 
           // And let's continue reading, in case there is more stuff in
           // this chunk for us to parse!
-          console.debug(
-            "Restarting in current buffer...",
-            JSON.stringify(input_buffer)
-          );
+          // console.debug(
+          //   "Restarting in current buffer...",
+          //   JSON.stringify(input_buffer)
+          // );
         } else {
           // Patch parsing failed.  Let's wait for more data.
-          console.debug("Couldn't parse patches.");
+          // console.debug("Couldn't parse patches.");
           // Todo: Handle malformed patches by disconnecting
           break;
         }
       }
 
       // Now let's restart the whole process
-      console.debug("Waiting for next chunk to continue reading");
+      // console.debug("Waiting for next chunk to continue reading");
       reader
         .read()
         .then(read)
@@ -172,12 +172,12 @@ function parse_response(stream, on_message, on_finished, on_error) {
 
   // Parsing helpers
   function parse_headers() {
-    console.debug("Parsing headers from", input_buffer);
+    // console.debug("Parsing headers from", input_buffer);
     // This string could contain a whole response.
     // So first let's isolate to just the headers.
     var end_of_headers = input_buffer.indexOf("\n\n");
     if (end_of_headers === -1) {
-      console.debug("parse_headers: no double-newline");
+      // console.debug("parse_headers: no double-newline");
       return false;
     }
     var stuff_to_parse = input_buffer.substring(0, end_of_headers);
@@ -198,7 +198,7 @@ function parse_response(stream, on_message, on_finished, on_error) {
 
     // If we couldn't consume the entire buffer, then we can crash
     if (!completed) {
-      console.debug("parse_headers: not completed");
+      // console.debug("parse_headers: not completed");
       return false;
     } else return { headers: headers, consumeLength: end_of_headers + 2 };
   }
@@ -212,10 +212,10 @@ function parse_response(stream, on_message, on_finished, on_error) {
     //               "from", JSON.stringify(input_buffer))
 
     if (content_length) {
-      console.debug("Got an absolute body");
+      // console.debug("Got an absolute body");
       // This message has "body"
       if (content_length > input_buffer.length) {
-        console.debug("But we don't have enough data for it yet...");
+        // console.debug("But we don't have enough data for it yet...");
         return false;
       }
 
@@ -226,12 +226,12 @@ function parse_response(stream, on_message, on_finished, on_error) {
         },
       ];
       input_buffer = input_buffer.substring(content_length + 2);
-      console.debug(
-        "Now, we parsed",
-        JSON.stringify(parsed_patches[0].value),
-        "and input buffer is",
-        JSON.stringify(input_buffer)
-      );
+      // console.debug(
+      //   "Now, we parsed",
+      //   JSON.stringify(parsed_patches[0].value),
+      //   "and input buffer is",
+      //   JSON.stringify(input_buffer)
+      // );
       return true;
     }
     if (parsed_headers.patches) {
@@ -241,7 +241,7 @@ function parse_response(stream, on_message, on_finished, on_error) {
         input_buffer = input_buffer.trimStart();
         var parsePatchHeaders = parse_headers();
         if (!parsePatchHeaders) {
-          console.debug("Failed to parse patch headers!");
+          // console.debug("Failed to parse patch headers!");
           return false;
         }
         var patchHeaders = parsePatchHeaders.headers;
@@ -252,10 +252,10 @@ function parse_response(stream, on_message, on_finished, on_error) {
         // Does our current buffer contain enough data that we
         // have the entire patch?
         if (input_buffer.length < headerLength + length) {
-          console.debug(
-            "Buffer is too small to contain",
-            "the rest of the patch..."
-          );
+          // console.debug(
+          //   "Buffer is too small to contain",
+          //   "the rest of the patch..."
+          // );
           return false;
         }
 
@@ -270,17 +270,17 @@ function parse_response(stream, on_message, on_finished, on_error) {
         // We've got our patch!
         parsed_patches.push({ range: patchRange, value: patchValue });
         input_buffer = input_buffer.substring(headerLength + length + 2);
-        console.debug(
-          "Successfully parsed a patch.",
-          `We now have ${parsed_patches.length}/${parsed_headers.patches}`
-        );
+        // console.debug(
+        //   "Successfully parsed a patch.",
+        //   `We now have ${parsed_patches.length}/${parsed_headers.patches}`
+        // );
       }
 
       if (input_buffer[0] === "\n" && input_buffer[1] === "\n") {
         console.error(input_buffer);
         throw "bad";
       }
-      console.debug("Parsed all patches.");
+      // console.debug("Parsed all patches.");
       return true;
     }
   }

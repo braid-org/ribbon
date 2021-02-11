@@ -1,1 +1,3 @@
-export { Resource, ListResource } from "./Resource";
+export { Resource, BraidResponse, ServerResponsePlusBraid } from "./Resource";
+export { ListResource } from "./ListResource";
+export { Link } from "./Link";

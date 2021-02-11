@@ -4,16 +4,16 @@
   import PostList from "./PostList.svelte";
   import NewPostButton from "./NewPostButton.svelte";
 
-  export let resource;
+  export let posts; // : Resource<Array<any>>
 
   let connectState;
-  $: connectState = resource.connectState;
+  $: connectState = posts.connectState;
 
   let newPostVisible = false;
 
   function onPost({ detail }) {
     const { title, body } = detail;
-    resource.append({ title, body });
+    posts.append({ title, body });
     newPostVisible = false;
   }
 </script>
@@ -27,7 +27,7 @@
 {/if}
 
 {#if $connectState === "connected"}
-  <PostList {resource} />
+  <PostList {posts} />
 {:else if $connectState === "init"}
   <status transition:slide> Loading... </status>
 {:else}

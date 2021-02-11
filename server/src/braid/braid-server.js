@@ -23,13 +23,13 @@ function generate_patches(res, patches) {
       var range = split[1];
       var change = split[2];
     } else {
-      console.log("patch is", patch);
+      // console.log("patch is", patch);
       var range = patch.range,
         change = patch.content;
       // if (res.getHeader('content-type') === 'application/json')
       //     change = JSON.stringify(change)
     }
-    console.log({ range, change });
+    // console.log({ range, change });
 
     out += `content-length: ${change.length}\n`;
     out += `content-range: json=${range}\n`;
@@ -47,13 +47,14 @@ function parse_patches(req, cb) {
 
   let patches = [];
   let buffer = "";
-  if (num_patches === 0) return cb(patches);
+
+  if (num_patches === 0 || num_patches === undefined) return cb(patches);
 
   stream.on("data", function parse(chunk) {
-    while (patches.length < num_patches) {
-      // Merge the latest chunk into our buffer
-      buffer = buffer + chunk;
+    // Merge the latest chunk into our buffer
+    buffer = buffer + chunk;
 
+    while (patches.length < num_patches) {
       // We might have an extra newline at the start.  (mike: why?)
       buffer = buffer.trimStart();
 
@@ -112,7 +113,7 @@ function parse_patches(req, cb) {
 }
 
 function braidify(req, res, next) {
-  console.log("\n## Braidifying", req.method, req.url, req.headers.client);
+  // console.log("\n## Braidifying", req.method, req.url, req.headers.client);
 
   // First, declare that we support Patches and JSON ranges.
   res.setHeader("Range-Request-Allow-Methods", "PATCH, PUT");
@@ -159,12 +160,12 @@ function braidify(req, res, next) {
   req.startSubscription = res.startSubscription = function startSubscription(
     args
   ) {
-    console.log("Starting subscription!!");
-    console.log(
-      "Timeouts are:",
-      req.socket.server.timeout,
-      req.socket.server.keepAliveTimeout
-    );
+    // console.log("Starting subscription!!");
+    // console.log(
+    //   "Timeouts are:",
+    //   req.socket.server.timeout,
+    //   req.socket.server.keepAliveTimeout
+    // );
 
     // Let's disable the timeouts
     req.socket.server.timeout = 0.0;
@@ -197,7 +198,7 @@ function braidify(req, res, next) {
 }
 
 function send_version({ res, version, parents, patches, body }) {
-  console.log("sending version", { version, parents, patches, body });
+  // console.log("sending version", { version, parents, patches, body });
   if (body) assert(typeof body === "string");
   (patches || []).forEach((p) => assert(typeof p.content === "string"));
   if (version) res.write(`Version: ${JSON.stringify(version)}\n`);

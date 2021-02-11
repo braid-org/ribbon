@@ -1,9 +1,22 @@
 <script>
   import DOMPurify from "dompurify";
   import anchorme from "anchorme";
+  import { Resource } from "../braid/Resource";
 
-  export let title;
-  export let body;
+  // export let title;
+  // export let body;
+
+  export let post;
+
+  let title;
+  let body;
+  $: if (post instanceof Resource && $post) {
+    title = $post.title;
+    body = $post.body;
+  } else {
+    title = post.title;
+    body = post.body;
+  }
 
   function format(text) {
     const cleanText = DOMPurify.sanitize(text);

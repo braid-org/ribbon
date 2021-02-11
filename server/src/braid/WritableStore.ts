@@ -4,7 +4,8 @@ type WritableStoreSubscription = {
 
 export declare type WritableStore<T extends unknown> = {
   get(): T | null;
-  set(callback: (state: T) => T): void;
+  set(value: T): void;
+  update(callback: (state: T) => T): void;
   subscribe(callback: (state: T) => void): WritableStoreSubscription;
 };
 
@@ -15,7 +16,11 @@ export function writable<T extends unknown>(state: T): WritableStore<T> {
     get() {
       return writableState;
     },
-    set(callback) {
+    set(value: T) {
+      writableState = value;
+      subscribers!.forEach((subscriber) => subscriber(writableState as T));
+    },
+    update(callback) {
       writableState = callback.call(null, writableState as T);
       subscribers!.forEach((subscriber) => subscriber(writableState as T));
     },
