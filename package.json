@@ -15,6 +15,11 @@
     "quoteProps": "consistent"
   },
   "scripts": {
-    "start": "concurrently 'yarn workspace ribbon-server start' 'yarn workspace ribbon-client start'"
+    "start": "SNOWPACK_PUBLIC_URL=http://localhost:3000 concurrently 'yarn workspace ribbon-server start' 'yarn workspace ribbon-client start'",
+    "start-http2": "SNOWPACK_PUBLIC_URL=https://localhost:3000 concurrently 'yarn workspace ribbon-server start-http2' 'yarn workspace ribbon-client start'"
+  },
+  "scripts-comments": {
+    "start": "Starts both the server (http://localhost:3000) and client (http://localhost:8080).",
+    "start-http2": "Same as `start`, but enables HTTP2 and TLS. You will need to enable chrome://flags/#allow-insecure-localhost or equivalent on your browser."
   }
 }

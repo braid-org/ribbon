@@ -6,6 +6,7 @@
   "license": "MIT",
   "scripts": {
     "start": "ts-node-dev src/server.ts",
+    "start-http2": "ts-node-dev src/server.ts --http2",
     "build": "webpack"
   },
   "scripts-comments": {},
