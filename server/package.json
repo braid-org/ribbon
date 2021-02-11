@@ -17,8 +17,10 @@
     "webpack-cli": "^4.5.0"
   },
   "dependencies": {
+    "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "parse-headers": "^2.0.3",
-    "polka": "^0.5.2"
+    "polka": "^0.5.2",
+    "spdy": "^4.0.2"
   }
 }

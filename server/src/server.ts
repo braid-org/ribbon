@@ -1,5 +1,8 @@
+import spdy from "spdy";
 import polka from "polka";
 import cors from "cors";
+import fs from "fs";
+import path from "path";
 
 import braidify from "./braid/braid-server";
 import { ListResource } from "./braid";
@@ -30,8 +33,16 @@ const initialPosts = [
 
 const posts: ListResource<any> = new ListResource();
 const likes: ListResource<any> = new ListResource();
+const useHTTP2 = process.argv.includes("--http2");
+let server;
+if (useHTTP2) {
+  server = spdy.createServer({
+    key: fs.readFileSync(path.join(__dirname, "..", "keys", "key.pem")),
+    cert: fs.readFileSync(path.join(__dirname, "..", "keys", "cert.pem")),
+  });
+}
 
-const app = polka()
+const app = polka({ server })
   .use(cors({ origin: true }))
   .use(braidify);
 const port = process.env.PORT || 3000;
