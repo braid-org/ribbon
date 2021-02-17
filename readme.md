@@ -60,8 +60,8 @@ Ribbon follows the Braid spec for getting data: if you send a `Subscribe: keep-a
 
 Currently, Ribbon supports two types of operations:
 
-1. Create a new blog Post: send a regular PUT request to /post/N where N is the next available integer in the sequence of Post indices, and a new blog post will be created with that index.
-2. Append to the list of blog Posts: using the Braid protocol, send a PATCH request with a json range of `[-0:-0]` and a patch body with a new `link` to the post resource just created. The range `[-0:-0]` means "select from after the end to after the end" and replace nothing with something (a link to a blog post, in this case). This will update the list of links to posts to include a new link at the end.
+1. **Create a new blog Post:** send a regular PUT request to /post/N where N is the next available integer in the sequence of Post indices, and a new blog post will be created with that index.
+2. **Append to the list of blog Posts:** using the Braid protocol, send a PATCH request with a json range of `[-0:-0]` and a patch body with a new `link` to the post resource just created. The range `[-0:-0]` means "select from after the end to after the end" and replace nothing with something (a link to a blog post, in this case). This will update the list of links to posts to include a new link at the end.
 
 Currently, no `Parents` or `Version` headers are used (specified in the Braid protocol).
 
