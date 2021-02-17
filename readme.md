@@ -24,7 +24,7 @@ You can also run TLS on the backend, which is recommended because HTTP 1.1 allow
 yarn start-http2
 ```
 
-This changes the backend (`http://localhost:3000`) to be TLS (`https://localhost:3000`), and notifies the front-end at (`http://localhost8080`) to use the https backend.
+This changes the backend (`http://localhost:3000`) to be TLS (`https://localhost:3000`), and notifies the front-end at (`http://localhost:8080`) to use the https backend.
 
 Note that you may need to give your browser permission to use the provided self-signed TLS certificate. For example, on Chrome you can enable insecure localhost via the flag at `chrome://flags/#allow-insecure-localhost`. 
 
@@ -49,13 +49,6 @@ The Braid protocol constrains certain aspects of the way Ribbon communicates wit
 /post/N -> {"index": N, "title": "Hello", "body": "World"}
 /likes -> [{"url":"https://invisible.college:4545/post/2"}]
 ```
-{"$link": "https://invisible.college:4545/post/2"},{"$link": "https://invisible.college:4545/posts"}
-
-/feed
-
-/posts
-/post
-
 
 It's possible this schema will change in the future, for example, by incorporating `mf2+json` as a schema for post entries.
 
