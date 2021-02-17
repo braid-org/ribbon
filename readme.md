@@ -56,6 +56,16 @@ It's possible this schema will change in the future, for example, by incorporati
 
 Ribbon follows the Braid spec for getting data: if you send a `Subscribe: keep-alive` header in your request, the HTTP request will be kept open and subsequent changes to that resource will be sent as patches. If you don't send a `Subscribe` header, you'll get the current state of the resource returned as a regular HTTP GET response body.
 
+Try loading http://localhost:3000/posts or http://localhost:3000/post/0 directly to see how you can still use a regular GET to see Braid data.
+
+You can also use `curl` on the commande-line to subscribe to posts:
+
+```
+curl -k -H 'Subscribe: keep-alive` http://localhost:3000/posts
+```
+
+Then add a post and you'll see the update come through in the command line.
+
 ### Setting Data
 
 Currently, Ribbon supports two types of operations:
