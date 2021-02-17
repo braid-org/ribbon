@@ -4,13 +4,30 @@ import { config } from "../Settings/config";
 
 type ConnectionState = "init" | "connected" | "disconnected" | "error";
 
+// There is only one Resource per URL, so we create an in-memory cache
+// of resources. This gives us flexibility when multiple links point
+// to the same resource, or when a link is removed and re-created but
+// still points to the same resource (the resource itself does not
+// need to be destroyed when a link is destroyed).
+const resources: Map<string, Resource<any>> = new Map();
+
+function getOrCreateResource<T>(url: URL) {
+  if (resources.has(url.href)) {
+    return resources.get(url.href);
+  } else {
+    const resource = new Resource(url);
+    resources.set(url.href, resource);
+    return resource;
+  }
+}
+
 // Return a new JSON datatype, replacing $link with a Resource
-function linkedJSON(json: any, baseUrl: string) {
+function linkedJSON<T>(json: any, baseUrl: string) {
   if (json instanceof Array) {
     return json.map((item) => linkedJSON(item, baseUrl));
   } else if (json instanceof Object) {
     if (json.$link) {
-      return new Resource(new URL(json.$link, baseUrl));
+      return getOrCreateResource(new URL(json.$link, baseUrl));
     } else {
       const record = {};
       for (const [key, value] of Object.entries(json)) {
@@ -30,8 +47,10 @@ export class Resource<T> {
   connectState: Writable<ConnectionState>;
   state: ConnectionState;
   cancel: Function;
+  isResource: boolean;
 
   constructor(url: URL, initialValue: T = null) {
+    this.isResource = true;
     this.version = 0;
     this.url = url;
     this.store = writable(initialValue);
@@ -40,12 +59,12 @@ export class Resource<T> {
       this.state = state;
     });
 
-    console.log("braid_fetch", url);
-    this.cancel = braid_fetch(
+    // console.log("braid_fetch", url.href);
+    const cancel = braid_fetch(
       url,
       { subscribe: { keep_alive: true } },
       (response) => {
-        console.log("braid_fetch response", response);
+        // console.log("braid_fetch response", response);
         this.version = response.version;
         this.connectState.set("connected");
 
@@ -60,6 +79,10 @@ export class Resource<T> {
         this.connectState.set("error");
       }
     );
+    this.cancel = () => {
+      // console.log("cancel braid_fetch", url.href);
+      cancel();
+    };
   }
 
   setRaw(jsonValue: string) {
@@ -68,7 +91,9 @@ export class Resource<T> {
 
   setJson(value) {
     const baseUrl: string = get(config.serverUrl);
-    this.store.set(linkedJSON(value, baseUrl));
+    const maybeLinkedJSON = linkedJSON(value, baseUrl);
+    // console.log("setJson", this.url.href, value, "linked:", maybeLinkedJSON);
+    this.store.set(maybeLinkedJSON);
   }
 
   applyPatches(patches) {

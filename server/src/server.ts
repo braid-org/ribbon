@@ -78,15 +78,13 @@ app.get("/post/:n", (req, res) => {
 
 app.put("/post/:n", (req, res) => {
   const n = parseInt(req.params.n, 10);
-  const count = resources.posts.store.get().length;
+  const count = resources.posts.length;
 
   if (n >= 0 && n < count) {
-    // const post = req.body;
-    // resources.posts.setAtIndex(n, post);
-    // res.statusCode = 200;
-    // res.end(JSON.stringify(post));
+    // Patch a specific post
     resources.posts.get(n).pointer.patch(req, res);
   } else if (n === count) {
+    // Create a new post
     const resource = new Resource(postUrl, { index: n });
     resource.patch(req, res).then(() => {
       console.log("added new link to resource", resource);

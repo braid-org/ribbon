@@ -3,6 +3,9 @@
   import NewPost from "./NewPost.svelte";
   import PostList from "./PostList.svelte";
   import NewPostButton from "./NewPostButton.svelte";
+  import { config } from "../Settings/config";
+
+  let serverUrl = config.serverUrl;
 
   export let posts; // : Resource<Array<any>>
 
@@ -11,9 +14,24 @@
 
   let newPostVisible = false;
 
-  function onPost({ detail }) {
+  async function onPost({ detail }) {
     const { title, body } = detail;
-    posts.append({ title, body });
+    const index = $posts.length;
+    // Use a regular PUT here, because we aren't really patching anything,
+    // we're creating a new resource that will be linked to in our array
+    // of posts.
+    await fetch(new URL(`/post/${index}`, $serverUrl), {
+      method: "PUT",
+      mode: "cors",
+      cache: "no-cache",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ index, title, body }), // body data type must match "Content-Type" header
+    });
+    // TODO: optimize by creating locally first, then skipping
+    // when server tells us it exists (instead of waiting for
+    // the server to tell us what we already know)
     newPostVisible = false;
   }
 </script>

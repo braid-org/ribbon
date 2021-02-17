@@ -1,5 +1,5 @@
 <script>
-  import SpinButton from "./SpinButton.svelte";
+  import SpinButton from "../components/SpinButton.svelte";
   import Icon from "../Icon.svelte";
   import FaPenSquare from "svelte-icons/fa/FaPenSquare.svelte";
 
