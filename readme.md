@@ -11,13 +11,22 @@ yarn install
 yarn start
 ```
 
+This will start TWO servers simultaneously:
+
+```
+http://localhost:3000  <-- Back-end Braid server
+http://localhost:8080  <-- Front-end Snowpack server
+```
+
 You can also run TLS on the backend, which is recommended because HTTP 1.1 allows for only 6 simultaneous connections. Braid takes advantage of HTTP 2.0 multiplexing to access more than 6 subscriptions at a time:
 
 ```
 yarn start-http2
 ```
 
-Note that you may need to give your browser permission to use the provided self-signed TLS certificate. For example, on Chrome you can enable insecure localhost via the flag at `chrome://flags/#allow-insecure-localhost`.
+This changes the backend (`http://localhost:3000`) to be TLS (`https://localhost:3000`), and notifies the front-end at (`http://localhost8080`) to use the https backend.
+
+Note that you may need to give your browser permission to use the provided self-signed TLS certificate. For example, on Chrome you can enable insecure localhost via the flag at `chrome://flags/#allow-insecure-localhost`. 
 
 ## Project Structure
 
