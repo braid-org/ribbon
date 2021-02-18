@@ -1,6 +1,5 @@
 import { ServerResponse } from "http";
 
-import { writable, WritableStore } from "./WritableStore";
 import { hash } from "./hash";
 import bodyParser from "body-parser";
 
@@ -28,33 +27,28 @@ export type GetUrl<T> = (item: T) => string;
 
 export class Resource<T> {
   version: number;
-  store: WritableStore<T>;
+  value: T;
   subscriptions: Record<string, ServerResponsePlusBraid>;
   getUrl: GetUrl<T>;
 
   constructor(getUrl: GetUrl<T>, initialValue: T) {
     this.version = 0;
-    this.store = writable(initialValue);
+    this.value = initialValue;
     this.subscriptions = {};
     this.getUrl = getUrl;
-
-    this.connectStoreToSubscriptions();
   }
 
   get url() {
-    return this.getUrl(this.store.get());
+    return this.getUrl(this.value);
   }
 
-  connectStoreToSubscriptions() {
-    // Subscribe to each change to the store
-    this.store.subscribe((value) => {
-      // A change means the store holds a new version
-      this.version++;
+  change() {
+    // A change means the store holds a new version
+    this.version++;
 
-      for (const response of Object.values(this.subscriptions)) {
-        this.sendValue(response, this.version, value);
-      }
-    });
+    for (const response of Object.values(this.subscriptions)) {
+      this.sendValue(response, this.version, this.value);
+    }
   }
 
   addSubscription(subId: string, response: ServerResponsePlusBraid) {
@@ -75,8 +69,6 @@ export class Resource<T> {
   // If the request is a regular GET, treat it as a one-time response.
   // If the request is a Subscribe-GET, add to subscriptions pool
   subscribe(req, response: ServerResponsePlusBraid) {
-    const currentValue = this.store.get();
-
     response.setHeader("content-type", "application/json");
 
     if (req.subscribe) {
@@ -86,10 +78,10 @@ export class Resource<T> {
       this.addSubscription(subscriptionId, response);
 
       // Send initial value
-      this.sendValue(response, this.version, currentValue);
+      this.sendValue(response, this.version, this.value);
     } else {
       response.statusCode = 200;
-      response.end(JSON.stringify(currentValue));
+      response.end(JSON.stringify(this.value));
     }
   }
 
@@ -107,9 +99,9 @@ export class Resource<T> {
       );
     } else {
       const json: T = (await getBodyAsJson(req, response)) as T;
-      this.store.update(($value) =>
-        Object.assign(json, { index: ($value as any).index })
-      );
+      this.value = Object.assign(json, { index: (this.value as any).index });
+      this.change();
+
       response.statusCode = 200;
       response.end();
     }

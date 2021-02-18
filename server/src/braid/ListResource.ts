@@ -6,23 +6,21 @@ export class ListResource<T> extends Resource<Array<T>> {
   }
 
   push(value: T) {
-    this.store.update((state) => [...state, value]);
+    this.value = [...this.value, value];
+    this.change();
   }
 
   get length(): number {
-    return this.store.get().length;
+    return this.value.length;
   }
 
   get(i: number): T {
-    return this.store.get()[i];
+    return this.value[i];
   }
 
   setAtIndex(index: number, value: T) {
-    this.store.update((state) => [
-      ...state.slice(0, index),
-      value,
-      ...state.slice(index + 1, state.length + 1),
-    ]);
+    this.value[index] = value;
+    this.change();
   }
 
   async patch(req, response: ServerResponsePlusBraid) {
