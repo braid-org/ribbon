@@ -4,6 +4,7 @@
   import Background from "./Background.svelte";
   import Sidebar from "./Sidebar.svelte";
 
+  import FeedPage from "./Feed/FeedPage.svelte";
   import PostsPage from "./Posts/PostsPage.svelte";
   import LikesPage from "./Likes/LikesPage.svelte";
   import SettingsPage from "./Settings/SettingsPage.svelte";
@@ -31,7 +32,9 @@
 <Sidebar bind:page />
 
 <app>
-  {#if page === "posts"}
+  {#if page === "feed"}
+    <FeedPage {likes} />
+  {:else if page === "posts"}
     <PostsPage {posts} />
   {:else if page === "likes"}
     <LikesPage {likes} />

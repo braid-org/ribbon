@@ -2,6 +2,7 @@
   import FaBlog from "svelte-icons/fa/FaBlog.svelte";
   import FaRegThumbsUp from "svelte-icons/fa/FaRegThumbsUp.svelte";
   import FaPowerOff from "svelte-icons/fa/FaPowerOff.svelte";
+  import FaPencilAlt from "svelte-icons/fa/FaPencilAlt.svelte";
 
   export let page;
 
@@ -10,7 +11,8 @@
   };
 
   const pages = [
-    { id: "posts", icon: FaBlog },
+    { id: "feed", icon: FaBlog },
+    { id: "posts", icon: FaPencilAlt },
     { id: "likes", icon: FaRegThumbsUp },
     { id: "settings", icon: FaPowerOff, end: true },
   ];
