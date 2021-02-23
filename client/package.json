@@ -5,7 +5,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "snowpack dev --output stream --open none",
+    "start": "snowpack dev --reload --output stream --open none",
     "build": "snowpack build",
     "test": "echo \"This template does not include a test runner by default.\" && exit 1"
   },
@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "anchorme": "^2.1.2",
+    "braidjs": "^0.1.0",
     "dompurify": "^2.2.6",
     "svelte": "^3.32.1",
     "svelte-icons": "^2.1.0",

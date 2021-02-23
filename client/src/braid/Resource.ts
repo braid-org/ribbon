@@ -1,5 +1,5 @@
 import { get, writable, Writable } from "svelte/store";
-import { braid_fetch } from "./braid-client";
+import { fetch } from "braidjs";
 import { config } from "../Settings/config";
 
 type ConnectionState = "init" | "connected" | "disconnected" | "error";
@@ -60,10 +60,8 @@ export class Resource<T> {
     });
 
     // console.log("braid_fetch", url.href);
-    const cancel = braid_fetch(
-      url,
-      { subscribe: { keep_alive: true } },
-      (response) => {
+    const cancel = fetch(url, { subscribe: { keep_alive: true } })
+      .andThen((response) => {
         // console.log("braid_fetch response", response);
         this.version = response.version;
         this.connectState.set("connected");
@@ -74,11 +72,11 @@ export class Resource<T> {
         } else {
           this.setRaw(response.body);
         }
-      },
-      () => {
+      })
+      .catch(() => {
         this.connectState.set("error");
-      }
-    );
+      });
+
     this.cancel = () => {
       // console.log("cancel braid_fetch", url.href);
       cancel();
@@ -86,7 +84,13 @@ export class Resource<T> {
   }
 
   setRaw(jsonValue: string) {
-    this.setJson(JSON.parse(jsonValue));
+    let parsed
+    try {
+      parsed = JSON.parse(jsonValue)
+    } catch (err) {
+      throw new Error(`Unable to parse: ${jsonValue} (${err})`)
+    }
+    this.setJson(parsed);
   }
 
   setJson(value) {
@@ -101,7 +105,7 @@ export class Resource<T> {
       // assume the patch replaces the resource
       // TODO: smarter logic around patch ranges--e.g. change just the title
       if (patch.range === "") {
-        this.setRaw(patch.value);
+        this.setRaw(patch.content);
       } else {
         console.warn(`Can't apply patch; range unsupported`, patch.range);
       }

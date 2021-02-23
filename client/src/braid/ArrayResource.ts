@@ -1,4 +1,4 @@
-import { braid_put } from "./braid-client";
+import { fetch } from "braidjs";
 import { Resource } from "./Resource";
 
 export class ArrayResource<T> extends Resource<Array<T>> {
@@ -10,7 +10,8 @@ export class ArrayResource<T> extends Resource<Array<T>> {
     this.store.update((items) => {
       return [...items, value];
     });
-    braid_put(this.url, {
+    fetch(this.url, {
+      method: "PUT",
       patches: [{ range: "[-0:-0]", value: JSON.stringify(value) }],
     });
   }

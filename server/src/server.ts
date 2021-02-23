@@ -4,7 +4,7 @@ import cors from "cors";
 import fs from "fs";
 import path from "path";
 
-import braidify from "./braid/braid-server";
+import { braidify } from "braidjs";
 import { Resource, ListResource, Link } from "./braid";
 
 type Post = {

@@ -14,7 +14,13 @@ module.exports = {
     minify: true,
     target: "es2018",
   },
-  packageOptions: {},
+  alias: {
+    "node-web-streams": "./src/shim/node-web-streams.js"
+  },
+  packageOptions: {
+    // Useful for 'assert' in browser, for example
+    polyfillNode: true
+  },
   devOptions: {},
   buildOptions: {},
 };
