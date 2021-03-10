@@ -5,7 +5,12 @@ import { Router } from "express";
 
 export const router = new Router();
 
-export function makeFeed(urlPrefix): Resource<Array<Post>> {
+export type FeedItem = {
+  resource: string;
+  post: Post;
+};
+
+export function makeFeed(urlPrefix): Resource<Array<FeedItem>> {
   return {
     version: 0,
     subscriptions: new Set(),
@@ -16,8 +21,7 @@ export function makeFeed(urlPrefix): Resource<Array<Post>> {
 
 router.get("/", (request, response) => {
   const feed = request.author.feed;
-  // const likesData = asData(likes.value, likes.urlPrefix);
-  const feedData = []
+  const feedData = feed.value;
   if (request.subscribe) {
     response.startSubscription();
     response.sendVersion({
