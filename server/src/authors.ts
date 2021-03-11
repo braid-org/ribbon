@@ -5,7 +5,7 @@ import { makeLikes, addLikeToFeed, Like } from "./likes";
 import { FeedItem, makeFeed } from "./feed";
 import { initialDefaultPosts, initialFriendPosts } from "./initialPosts";
 
-type Author = {
+export type Author = {
   shortname: string;
   posts: Resource<Array<Post>>;
   likes: Resource<Array<Like>>;
