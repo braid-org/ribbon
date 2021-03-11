@@ -9,19 +9,26 @@
   import LikesPage from "./Likes/LikesPage.svelte";
   import SettingsPage from "./Settings/SettingsPage.svelte";
 
-  import { config } from "./Settings/config";
+  import { serverUrl } from "./Settings/config";
 
-  let posts, likes;
-  let serverUrl = config.serverUrl;
+  let feed, posts, likes;
+
+  $: {
+    if (feed) feed.cancel();
+    const url = $serverUrl + "/feed";
+    feed = new ArrayResource(url);
+  }
 
   $: {
     if (posts) posts.cancel();
-    posts = new ArrayResource(new URL("/posts", $serverUrl));
+    const url = $serverUrl + "/posts";
+    posts = new ArrayResource(url);
   }
 
   $: {
     if (likes) likes.cancel();
-    likes = new ArrayResource(new URL("/likes", $serverUrl));
+    const url = $serverUrl + "/likes";
+    likes = new ArrayResource(url);
   }
 
   let page = "posts";
@@ -33,9 +40,9 @@
 
 <app>
   {#if page === "feed"}
-    <FeedPage {likes} />
+    <FeedPage records={$feed} />
   {:else if page === "posts"}
-    <PostsPage {posts} />
+    <PostsPage records={posts} />
   {:else if page === "likes"}
     <LikesPage {likes} />
   {:else if page === "settings"}

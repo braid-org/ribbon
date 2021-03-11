@@ -1,26 +1,20 @@
 <script>
   import { slide } from "svelte/transition";
   import PostList from "../Posts/PostList.svelte";
-  import { config } from "../Settings/config";
 
-  let serverUrl = config.serverUrl;
-
-  export let likes; // : Resource<Array<any>>
+  export let records; // : Resource<Array<any>>
 
   let connectState;
-  $: connectState = likes.connectState;
+  $: connectState = records.connectState;
 
-  function flattenLikes(list) {
-    return list;
-  }
 </script>
 
 {#if $connectState === "connected"}
-  {#if $likes.length === 0}
+  {#if $records.length === 0}
     <h1>Empty Feed</h1>
     <h2>Try 'Liking' a Post and it'll show up here</h2>
   {:else}
-    <PostList posts={likes} />
+    <PostList {records} />
   {/if}
 {:else if $connectState === "init"}
   <status transition:slide> Loading... </status>

@@ -1,1 +1,4 @@
-export const origin = process.env.RIBBON_SERVER_ORIGIN || "http://localhost:3000";
+export const origin =
+  process.env.RIBBON_SERVER_ORIGIN ||
+  process.env.SNOWPACK_PUBLIC_URL ||
+  "http://localhost:3000";

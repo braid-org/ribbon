@@ -1,6 +1,7 @@
 import { get, writable, Writable } from "svelte/store";
-import { fetch } from "braidjs";
-import { config } from "../Settings/config";
+import { fetch } from "braidify";
+import { serverUrl } from "../Settings/config";
+import { EventEmitter } from "events";
 
 type ConnectionState = "init" | "connected" | "disconnected" | "error";
 
@@ -18,25 +19,6 @@ function getOrCreateResource<T>(url: URL) {
     const resource = new Resource(url);
     resources.set(url.href, resource);
     return resource;
-  }
-}
-
-// Return a new JSON datatype, replacing $link with a Resource
-function linkedJSON<T>(json: any, baseUrl: string) {
-  if (json instanceof Array) {
-    return json.map((item) => linkedJSON(item, baseUrl));
-  } else if (json instanceof Object) {
-    if (json.$link) {
-      return getOrCreateResource(new URL(json.$link, baseUrl));
-    } else {
-      const record = {};
-      for (const [key, value] of Object.entries(json)) {
-        record[key] = linkedJSON(value, baseUrl);
-      }
-      return record;
-    }
-  } else {
-    return json;
   }
 }
 
@@ -60,9 +42,9 @@ export class Resource<T> {
     });
 
     // console.log("braid_fetch", url.href);
-    const cancel = fetch(url, { subscribe: { keep_alive: true } })
+    const abort = new AbortController();
+    const cancel = fetch(url, { subscribe: { keep_alive: true }, signal: abort.signal })
       .andThen((response) => {
-        // console.log("braid_fetch response", response);
         this.version = response.version;
         this.connectState.set("connected");
 
@@ -79,25 +61,23 @@ export class Resource<T> {
 
     this.cancel = () => {
       // console.log("cancel braid_fetch", url.href);
-      cancel();
+      // cancel();
+      abort.abort()
     };
   }
 
   setRaw(jsonValue: string) {
-    let parsed
+    let parsed;
     try {
-      parsed = JSON.parse(jsonValue)
+      parsed = JSON.parse(jsonValue);
     } catch (err) {
-      throw new Error(`Unable to parse: ${jsonValue} (${err})`)
+      throw new Error(`Unable to parse: ${jsonValue} (${err})`);
     }
     this.setJson(parsed);
   }
 
   setJson(value) {
-    const baseUrl: string = get(config.serverUrl);
-    const maybeLinkedJSON = linkedJSON(value, baseUrl);
-    // console.log("setJson", this.url.href, value, "linked:", maybeLinkedJSON);
-    this.store.set(maybeLinkedJSON);
+    this.store.set(value);
   }
 
   applyPatches(patches) {

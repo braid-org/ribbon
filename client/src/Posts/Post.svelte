@@ -2,16 +2,8 @@
   import DOMPurify from "dompurify";
   import anchorme from "anchorme";
 
-  export let post;
-
-  let title;
-  let body;
-  $: if ($post) {
-    title = $post.title;
-    body = $post.body;
-  } else {
-    // Do nothing; no need to show temporary blank states
-  }
+  export let title;
+  export let body;
 
   function format(text) {
     const cleanText = DOMPurify.sanitize(text);

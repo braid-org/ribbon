@@ -1,4 +1,4 @@
-import { fetch } from "braidjs";
+import { fetch } from "braidify";
 import { Resource } from "./Resource";
 
 export class ArrayResource<T> extends Resource<Array<T>> {

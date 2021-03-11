@@ -3,20 +3,18 @@
   import NewPost from "./NewPost.svelte";
   import PostList from "./PostList.svelte";
   import NewPostButton from "./NewPostButton.svelte";
-  import { config } from "../Settings/config";
+  import { serverUrl } from "../Settings/config";
 
-  let serverUrl = config.serverUrl;
-
-  export let posts; // : Resource<Array<any>>
+  export let records; // : Resource<Array<any>>
 
   let connectState;
-  $: connectState = posts.connectState;
+  $: connectState = records.connectState;
 
   let newPostVisible = false;
 
   async function onPost({ detail }) {
     const { title, body } = detail;
-    const index = $posts.length;
+    const index = $records.length;
     // Use a regular PUT here, because we aren't really patching anything,
     // we're creating a new resource that will be linked to in our array
     // of posts.
@@ -45,7 +43,7 @@
 {/if}
 
 {#if $connectState === "connected"}
-  <PostList {posts} />
+  <PostList {records} />
 {:else if $connectState === "init"}
   <status transition:slide> Loading... </status>
 {:else}

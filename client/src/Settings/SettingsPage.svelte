@@ -1,15 +1,12 @@
 <script>
   import { createEventDispatcher } from "svelte";
   import { get } from "svelte/store";
-  import { config } from "./config";
+  import { serverUrl } from "./config";
   import Button from "../components/Button.svelte";
 
   const dispatch = createEventDispatcher();
 
-  let serverUrl = get(config.serverUrl);
-
   function applySettings() {
-    config.serverUrl.set(serverUrl);
     dispatch("done");
   }
 </script>
@@ -17,11 +14,11 @@
 <page>
   <h1>Settings</h1>
   <setting>
-    <label for="serverUrl">Server</label>
+    <label for="serverUrl">Author URL</label>
     <input
       name="serverUrl"
       class="big"
-      bind:value={serverUrl}
+      bind:value={$serverUrl}
       placeholder="https://example.com"
     />
   </setting>

@@ -1,12 +1,12 @@
 <script>
   import Post from "./Post.svelte";
 
-  export let posts;
+  export let records;
 </script>
 
 <content>
-  {#each $posts as post}
-    <Post {post} />
+  {#each $records as { resource, post }}
+    <Post title={post.title} body={post.body} />
   {/each}
 </content>
 
