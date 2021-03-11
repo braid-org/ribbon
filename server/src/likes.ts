@@ -46,7 +46,7 @@ export function addLikeToFeed(like: Like, feed: Resource<Array<FeedItem>>) {
   });
 }
 
-router.get("/", (request, response) => {
+router.get("/likes", (request, response) => {
   const likes = request.author.likes;
   const likesData = asData(likes.urlPrefix)(likes.value);
   if (request.subscribe) {
@@ -61,7 +61,7 @@ router.get("/", (request, response) => {
   }
 });
 
-router.put("/", async (request, response) => {
+router.put("/likes", async (request, response) => {
   const likes = request.author.likes;
   const patches = await request.patches();
   if (patches.length > 0) {

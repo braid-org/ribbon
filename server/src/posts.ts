@@ -24,7 +24,7 @@ const asData = (prefix: string) => (posts: Array<Post>) => {
   }));
 }
 
-router.get("/", (request, response) => {
+router.get("/posts", (request, response) => {
   const posts = request.author.posts;
   const postsData = asData(posts.urlPrefix)(posts.value);
   if (request.subscribe) {
@@ -39,7 +39,7 @@ router.get("/", (request, response) => {
   }
 });
 
-router.put("/", async (request, response) => {
+router.put("/posts", async (request, response) => {
   const posts = request.author.posts;
   const patches = await request.patches();
   if (patches.length > 0) {

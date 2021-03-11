@@ -19,7 +19,7 @@ export function makeFeed(urlPrefix): Resource<Array<FeedItem>> {
   };
 }
 
-router.get("/", (request, response) => {
+router.get("/feed", (request, response) => {
   const feed = request.author.feed;
   const feedData = feed.value;
   if (request.subscribe) {
