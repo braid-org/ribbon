@@ -3,7 +3,7 @@ export type Post = {
   body?: string;
 };
 
-export const initialPosts: Array<Post> = [
+export const initialDefaultPosts: Array<Post> = [
   {
     title: "A microblog you own",
     body:
@@ -19,4 +19,9 @@ export const initialPosts: Array<Post> = [
   },
   { title: "Welcome to\nThe Braid." },
   { title: "hello." },
+];
+
+export const initialFriendPosts: Array<Post> = [
+  { title: "Hey!", body: "This is pretty exciting!" },
+  { title: "Goodness." },
 ];

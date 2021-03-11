@@ -1,12 +1,14 @@
-import { Post, initialPosts } from "./initialPosts";
 import { Resource, update } from "./resource";
 import { send, error } from "./utils";
 import { Router } from "express";
+
+// Re-export 'Post' type
+import { Post } from "./initialPosts";
 export { Post } from './initialPosts'
 
 export const router = new Router()
 
-export function makePosts(urlPrefix): Resource<Array<Post>> {
+export function makePosts(urlPrefix, initialPosts = []): Resource<Array<Post>> {
   return {
     version: 0,
     subscriptions: new Set(),

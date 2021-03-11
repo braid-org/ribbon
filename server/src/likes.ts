@@ -1,20 +1,22 @@
 import { Resource, update } from "./resource";
 import { send, error } from "./utils";
 import { Router } from "express";
+import { FeedItem } from "./feed";
+import { fetch } from "braidify";
 
 export const router = new Router();
 
 export type Like = {
   $link: string;
   weight: number;
-}
+};
 
 export function makeLikes(urlPrefix): Resource<Array<Like>> {
   return {
     version: 0,
     subscriptions: new Set(),
     value: [],
-    urlPrefix
+    urlPrefix,
   };
 }
 
@@ -23,6 +25,25 @@ const asData = (prefix: string) => (likes: Array<Like>) => {
     resource: `${prefix}/like/${i}`,
     like,
   }));
+};
+
+export function addLikeToFeed(like: Like, feed: Resource<Array<FeedItem>>) {
+  fetch(like.$link, {
+    subscribe: { keep_alive: true },
+  }).andThen((version) => {
+    if (version.body) {
+      const records = JSON.parse(version.body);
+      for (const { resource, post } of records) {
+        if (!feed.value.find((item) => item.resource === resource)) {
+          feed.value.push({ resource, post });
+        }
+      }
+      // Tell subscribers the feed has changed
+      update(feed);
+    } else if (version.patches) {
+      throw new Error("patches not yet supported");
+    }
+  });
 }
 
 router.get("/", (request, response) => {
@@ -48,8 +69,11 @@ router.put("/", async (request, response) => {
     for (const patch of patches) {
       // We only accept appending via 'json' content-range type
       if (patch.unit === "json" && patch.range === "[-0:-0]") {
-        const { title, body } = JSON.parse(patch.content);
-        likes.value.push({ title, body });
+        const like: Like = JSON.parse(patch.content);
+        if (like.$link) {
+          likes.value.push(like);
+          addLikeToFeed(like, request.author.feed);
+        }
       } else {
         error(response, "only appending to likes is supported");
         return;
