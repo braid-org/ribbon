@@ -1,4 +1,5 @@
 import { Resource, update } from "./resource";
+import { Post } from "./posts";
 import { send, error } from "./utils";
 import { Router } from "express";
 import { FeedItem } from "./feed";
@@ -27,16 +28,33 @@ const asData = (prefix: string) => (likes: Array<Like>) => {
   }));
 };
 
+function addRecordToFeed(
+  { resource, post }: { resource: string; post: Post },
+  feed: Resource<Array<FeedItem>>
+) {
+  if (!feed.value.find((item) => item.resource === resource)) {
+    feed.value.push({ resource, post });
+  }
+}
+
 export function addLikeToFeed(like: Like, feed: Resource<Array<FeedItem>>) {
   fetch(like.$link, {
     subscribe: { keep_alive: true },
   }).andThen((version) => {
     if (version.body) {
       const records = JSON.parse(version.body);
-      for (const { resource, post } of records) {
-        if (!feed.value.find((item) => item.resource === resource)) {
-          feed.value.push({ resource, post });
+
+      /**
+       * We must decide heuristically here what to do with the thing that was 'liked':
+       * - if it's a list of posts, we can iterate and add them
+       * - if it's an individual post, just add it
+       * */
+      if (records instanceof Array) {
+        for (const record of records) {
+          addRecordToFeed(record, feed);
         }
+      } else {
+        addRecordToFeed(records /* individual record */, feed);
       }
       // Tell subscribers the feed has changed
       update(feed);

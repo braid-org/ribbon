@@ -1,19 +1,20 @@
+import { origin } from "./config";
 import { Resource, update } from "./resource";
 import { send, error } from "./utils";
 import { Router } from "express";
 
 // Re-export 'Post' type
 import { Post } from "./initialPosts";
-export { Post } from './initialPosts'
+export { Post } from "./initialPosts";
 
-export const router = new Router()
+export const router = new Router();
 
 export function makePosts(urlPrefix, initialPosts = []): Resource<Array<Post>> {
   return {
     version: 0,
     subscriptions: new Set(),
     value: [...initialPosts],
-    urlPrefix
+    urlPrefix,
   };
 }
 
@@ -22,7 +23,27 @@ const asData = (prefix: string) => (posts: Array<Post>) => {
     resource: `${prefix}/post/${i}`,
     post,
   }));
-}
+};
+
+router.get("/post/:index", (request, response) => {
+  const posts = request.author.posts;
+  const idx = parseInt(request.params.index, 10);
+  if (idx >= 0 && idx < posts.value.length) {
+    const post = posts.value[idx];
+
+    response.startSubscription();
+    response.sendVersion({
+      version: posts.version,
+      body: JSON.stringify({
+        resource: `${origin}${request.originalUrl}`,
+        post,
+      }),
+    });
+    // TODO: make "post" a resource that updates?
+  } else {
+    error(response, "out of range", 416);
+  }
+});
 
 router.get("/posts", (request, response) => {
   const posts = request.author.posts;
