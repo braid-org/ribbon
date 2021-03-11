@@ -21,7 +21,7 @@ export function makeLikes(urlPrefix): Resource<Array<Like>> {
   };
 }
 
-const asData = (prefix: string) => (likes: Array<Like>) => {
+const asRecords = (prefix: string) => (likes: Array<Like>) => {
   return likes.map((like, i) => ({
     resource: `${prefix}/like/${i}`,
     like,
@@ -66,7 +66,7 @@ export function addLikeToFeed(like: Like, feed: Resource<Array<FeedItem>>) {
 
 router.get("/likes", (request, response) => {
   const likes = request.author.likes;
-  const likesData = asData(likes.urlPrefix)(likes.value);
+  const likesData = asRecords(likes.urlPrefix)(likes.value);
   if (request.subscribe) {
     response.startSubscription();
     response.sendVersion({
@@ -102,7 +102,7 @@ router.put("/likes", async (request, response) => {
   }
 
   // Increment version & send an update to any subscribers
-  update(likes, asData(likes.urlPrefix));
+  update(likes, asRecords(likes.urlPrefix));
 
   // Acknowledge like(s) appended
   send(response, { success: true });

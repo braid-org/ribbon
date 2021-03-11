@@ -18,7 +18,7 @@ export function makePosts(urlPrefix, initialPosts = []): Resource<Array<Post>> {
   };
 }
 
-const asData = (prefix: string) => (posts: Array<Post>) => {
+const asRecords = (prefix: string) => (posts: Array<Post>) => {
   return posts.map((post, i) => ({
     resource: `${prefix}/post/${i}`,
     post,
@@ -47,7 +47,7 @@ router.get("/post/:index", (request, response) => {
 
 router.get("/posts", (request, response) => {
   const posts = request.author.posts;
-  const postsData = asData(posts.urlPrefix)(posts.value);
+  const postsData = asRecords(posts.urlPrefix)(posts.value);
   if (request.subscribe) {
     response.startSubscription();
     response.sendVersion({
@@ -80,7 +80,7 @@ router.put("/posts", async (request, response) => {
   }
 
   // Increment version & send an update to any subscribers
-  update(posts, asData(posts.urlPrefix));
+  update(posts, asRecords(posts.urlPrefix));
 
   // Acknowledge post(s) appended
   send(response, { success: true });
