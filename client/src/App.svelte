@@ -40,7 +40,7 @@
 
 <app>
   {#if page === "feed"}
-    <FeedPage records={$feed} />
+    <FeedPage records={feed} />
   {:else if page === "posts"}
     <PostsPage records={posts} />
   {:else if page === "likes"}

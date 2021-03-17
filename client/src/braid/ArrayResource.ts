@@ -7,12 +7,14 @@ export class ArrayResource<T> extends Resource<Array<T>> {
   }
 
   append(value: T) {
-    this.store.update((items) => {
-      return [...items, value];
-    });
+    // this.store.update((items) => {
+    //   return [...items, value];
+    // });
     fetch(this.url, {
       method: "PUT",
-      patches: [{ range: "[-0:-0]", value: JSON.stringify(value) }],
+      patches: [
+        { unit: "json", range: "[-0:-0]", content: JSON.stringify(value) },
+      ],
     });
   }
 }
