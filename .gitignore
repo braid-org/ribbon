@@ -4,3 +4,4 @@ yarn.lock
 client/snowpack.crt
 client/snowpack.key
 server/keys/*
+.DS_Store
