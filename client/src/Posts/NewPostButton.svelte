@@ -1,6 +1,6 @@
 <script>
   import SpinButton from "../components/SpinButton.svelte";
-  import Icon from "../Icon.svelte";
+  import Icon from "../components/Icon.svelte";
   import FaPenSquare from "svelte-icons/fa/FaPenSquare.svelte";
 
   export let visible;

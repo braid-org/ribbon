@@ -6,7 +6,6 @@
 
   let connectState;
   $: connectState = records.connectState;
-
 </script>
 
 {#if $connectState === "connected"}
@@ -20,9 +19,8 @@
   <status transition:slide> Loading... </status>
 {:else}
   <status>
-    Not connected: <span class:error={$connectState === "error"}
-      >{$connectState}</span
-    >
+    Not connected:
+    <span class:error={$connectState === "error"}>{$connectState}</span>
   </status>
 {/if}
 

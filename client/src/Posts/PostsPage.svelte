@@ -3,7 +3,6 @@
   import NewPost from "./NewPost.svelte";
   import PostList from "./PostList.svelte";
   import NewPostButton from "./NewPostButton.svelte";
-  import { serverUrl } from "../Settings/config";
 
   export let records; // : Resource<Array<any>>
 
@@ -36,9 +35,8 @@
   <status transition:slide> Loading... </status>
 {:else}
   <status>
-    Not connected: <span class:error={$connectState === "error"}
-      >{$connectState}</span
-    >
+    Not connected:
+    <span class:error={$connectState === "error"}>{$connectState}</span>
   </status>
 {/if}
 

@@ -1,7 +1,7 @@
 <script>
   import { createEventDispatcher } from "svelte";
   import Button from "../components/Button.svelte";
-  import Icon from "../Icon.svelte";
+  import Icon from "../components/Icon.svelte";
   import IoIosLink from "svelte-icons/io/IoIosLink.svelte";
 
   const dispatch = createEventDispatcher();
