@@ -17,10 +17,9 @@
  *
  */
 
-process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = '0';
+process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
 
 import spdy from "spdy";
-import http from "http";
 import express from "express";
 import cors from "cors";
 import fs from "fs";
@@ -31,8 +30,6 @@ import { serverApi } from "./serverApi";
 
 const port = process.env.PORT || 3000;
 
-const useHTTP2 = process.argv.includes("--http2");
-
 const app = express()
   .use(cors({ origin: true }))
   .use(braidify);
@@ -40,25 +37,18 @@ const app = express()
 // Add our Ribbon request handlers
 serverApi(app);
 
-let server;
-if (useHTTP2) {
-  server = spdy.createServer(
-    {
-      key: fs.readFileSync(path.join(__dirname, "..", "keys", "key.pem")),
-      cert: fs.readFileSync(path.join(__dirname, "..", "keys", "cert.pem")),
-    },
-    app
-  );
-} else {
-  server = http.createServer(app);
-}
+const server = spdy.createServer(
+  {
+    key: fs.readFileSync(path.join(__dirname, "..", "keys", "localhost.key")),
+    cert: fs.readFileSync(path.join(__dirname, "..", "keys", "localhost.cert")),
+  },
+  app
+);
 
 server.listen(port, (err) => {
   if (err) {
     console.error(err);
-  } else if (useHTTP2) {
-    console.log(`HTTP 2.0 server is listening on ${port} with TLS`);
   } else {
-    console.log(`HTTP 1.1 server is listening on ${port}`);
+    console.log(`HTTP 2.0 server is listening on ${port} with TLS`);
   }
 });

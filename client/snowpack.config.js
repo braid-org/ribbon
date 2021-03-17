@@ -21,6 +21,8 @@ module.exports = {
     // Useful for 'assert' in browser, for example
     polyfillNode: true
   },
-  devOptions: {},
+  devOptions: {
+    secure: true
+  },
   buildOptions: {},
 };

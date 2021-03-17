@@ -8,25 +8,25 @@ To get started locally, run:
 
 ```
 yarn install
+./certs.sh
+```
+
+This will install localhost TLS certificates, which is necessary because HTTP 1.1 allows for only 6 simultaneous connections. Braid takes advantage of HTTP 2.0 multiplexing to access more than 6 subscriptions at a time.
+
+Note that you may need to give your browser permission to use the provided self-signed TLS certificate. For example, on Chrome you can enable insecure localhost via the flag at `chrome://flags/#allow-insecure-localhost`. 
+
+Next:
+
+```
 yarn start
 ```
 
-This will start TWO servers simultaneously:
+This starts TWO servers simultaneously:
 
 ```
 http://localhost:3000  <-- Back-end Braid server
 http://localhost:8080  <-- Front-end Snowpack server
 ```
-
-You can also run TLS on the backend, which is recommended because HTTP 1.1 allows for only 6 simultaneous connections. Braid takes advantage of HTTP 2.0 multiplexing to access more than 6 subscriptions at a time:
-
-```
-yarn start-http2
-```
-
-This changes the backend (`http://localhost:3000`) to be TLS (`https://localhost:3000`), and notifies the front-end at (`http://localhost:8080`) to use the https backend.
-
-Note that you may need to give your browser permission to use the provided self-signed TLS certificate. For example, on Chrome you can enable insecure localhost via the flag at `chrome://flags/#allow-insecure-localhost`. 
 
 ## Project Structure
 
@@ -45,9 +45,13 @@ The Braid protocol constrains certain aspects of the way Ribbon communicates wit
 ### Schema
 
 ```
-/posts -> [{"$link": "/post/0"},{"$link": "/post/1"},...]
-/post/N -> {"index": N, "title": "Hello", "body": "World"}
-/likes -> [{"url":"https://invisible.college:4545/post/2"}]
+/author/NAME/posts -> [
+  {
+    "resource": "https://localhost:3000/author/NAME/post/0",
+    "post": {"title": "Hello", "body": "World"}
+  },...]
+/author/NAME/post/N -> {"index": N, "title": "Hello", "body": "World"}
+/author/NAME/likes -> [{"$link":"https://invisible.college:4545/post/2"}]
 ```
 
 It's possible this schema will change in the future, for example, by incorporating `mf2+json` as a schema for post entries.
@@ -56,12 +60,12 @@ It's possible this schema will change in the future, for example, by incorporati
 
 Ribbon follows the Braid spec for getting data: if you send a `Subscribe: keep-alive` header in your request, the HTTP request will be kept open and subsequent changes to that resource will be sent as patches. If you don't send a `Subscribe` header, you'll get the current state of the resource returned as a regular HTTP GET response body.
 
-Try loading http://localhost:3000/posts or http://localhost:3000/post/0 directly to see how you can still use a regular GET to see Braid data.
+Try loading http://localhost:3000/author/default/posts or http://localhost:3000/author/default/post/0 directly to see how you can still use a regular GET to see Braid data.
 
 You can also use `curl` on the commande-line to subscribe to posts:
 
 ```
-curl -k -H 'Subscribe: keep-alive` http://localhost:3000/posts
+curl -k -H 'Subscribe: keep-alive` http://localhost:3000/author/default/posts
 ```
 
 Then add a post and you'll see the update come through in the command line.
@@ -74,10 +78,3 @@ Currently, Ribbon supports two types of operations:
 2. **Append to the list of blog Posts:** using the Braid protocol, send a PATCH request with a json range of `[-0:-0]` and a patch body with a new `link` to the post resource just created. The range `[-0:-0]` means "select from after the end to after the end" and replace nothing with something (a link to a blog post, in this case). This will update the list of links to posts to include a new link at the end.
 
 Currently, no `Parents` or `Version` headers are used (specified in the Braid protocol).
-
-## Getting started
-
-```
-yarn install
-yarn start
-```

@@ -1,8 +1,7 @@
 import { get } from "svelte/store";
 import { writable } from "svelte-local-storage-store";
 
-const DEFAULT_URL =
-  import.meta.env["SNOWPACK_PUBLIC_URL"] || "https://invisible.college:4545";
+const DEFAULT_URL = "https://localhost:3000/author/default";
 
 export const serverUrl = writable("serverUrl", DEFAULT_URL);
 
