@@ -1,7 +1,5 @@
-import { get, writable, Writable } from "svelte/store";
+import { writable, Writable } from "svelte/store";
 import { fetch } from "braidify";
-import { serverUrl } from "../Settings/config";
-import { EventEmitter } from "events";
 
 type ConnectionState = "init" | "connected" | "disconnected" | "error";
 
