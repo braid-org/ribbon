@@ -1,6 +1,9 @@
 <script>
   import { slide } from "svelte/transition";
   import PostList from "../Posts/PostList.svelte";
+  import { author } from "../Settings/config";
+  import { capitalize } from "../utils/capitalize";
+  import { possessive } from "../utils/possessive";
 
   export let records; // : Resource<Array<any>>
 
@@ -13,6 +16,9 @@
     <h1>Empty Feed</h1>
     <h2>Try 'Liking' a Post and it'll show up here</h2>
   {:else}
+    <h1>
+      {#if $author}{possessive(capitalize($author))} {/if}Feed
+    </h1>
     <PostList {records} />
   {/if}
 {:else if $connectState === "init"}

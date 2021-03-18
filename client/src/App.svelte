@@ -9,25 +9,25 @@
   import LikesPage from "./Likes/LikesPage.svelte";
   import SettingsPage from "./Settings/SettingsPage.svelte";
 
-  import { serverUrl } from "./Settings/config";
+  import { authorUrl } from "./Settings/config";
 
   let feed, posts, likes;
 
   $: {
     if (feed) feed.cancel();
-    const url = $serverUrl + "/feed";
+    const url = $authorUrl + "/feed";
     feed = new ArrayResource(url);
   }
 
   $: {
     if (posts) posts.cancel();
-    const url = $serverUrl + "/posts";
+    const url = $authorUrl + "/posts";
     posts = new ArrayResource(url);
   }
 
   $: {
     if (likes) likes.cancel();
-    const url = $serverUrl + "/likes";
+    const url = $authorUrl + "/likes";
     likes = new ArrayResource(url);
   }
 

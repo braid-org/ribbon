@@ -12,13 +12,21 @@
 <bar>
   <h1>New Like</h1>
   <div>
-    <Icon color="white"><IoIosLink /></Icon>
+    <icon-wrapper>
+      <Icon color="white"><IoIosLink /></Icon>
+    </icon-wrapper>
     <input bind:value={url} placeholder="https://example.com/" />
   </div>
   <Button on:click={() => dispatch("like", { url })}>Like</Button>
 </bar>
 
 <style>
+  icon-wrapper {
+    display: block;
+    position: relative;
+    margin-right: -64px;
+    right: 64px;
+  }
   bar {
     display: flex;
     flex-direction: column;
@@ -26,7 +34,6 @@
     align-items: center;
 
     border-radius: 16px;
-    min-width: 360px;
     margin: -32px 32px 32px 32px;
   }
 
@@ -46,12 +53,12 @@
     font-size: 24px;
     border-radius: 4px;
 
-    padding: 8px;
+    padding: 16px 32px;
     margin: 16px;
 
     color: white;
     background-color: rgba(0, 0, 0, 0.25);
-    width: 100%;
+    min-width: 300px;
     height: 40px;
   }
 </style>
