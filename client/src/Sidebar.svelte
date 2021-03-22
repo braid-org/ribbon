@@ -1,8 +1,10 @@
 <script>
   import FaBlog from "svelte-icons/fa/FaBlog.svelte";
   import FaRegThumbsUp from "svelte-icons/fa/FaRegThumbsUp.svelte";
-  import FaPowerOff from "svelte-icons/fa/FaPowerOff.svelte";
   import FaPencilAlt from "svelte-icons/fa/FaPencilAlt.svelte";
+  import GoPerson from "svelte-icons/go/GoPerson.svelte";
+
+  import { author } from "./Settings/config";
 
   export let page;
 
@@ -14,7 +16,7 @@
     { id: "feed", icon: FaBlog },
     { id: "posts", icon: FaPencilAlt },
     { id: "likes", icon: FaRegThumbsUp },
-    { id: "settings", icon: FaPowerOff, end: true },
+    { id: "settings", icon: GoPerson, end: true },
   ];
 </script>
 
@@ -26,6 +28,7 @@
       </icon>
     </button>
   {/each}
+  <profile> {$author} </profile>
 </sidebar>
 
 <style>
@@ -40,8 +43,16 @@
 
     display: flex;
     flex-direction: column;
+    align-items: center;
 
     background-color: rgba(0, 0, 0, 0.75);
+  }
+
+  profile {
+    display: block;
+    color: white;
+    margin-bottom: 32px;
+    text-align: center;
   }
 
   button {
@@ -51,12 +62,13 @@
     justify-content: center;
     align-items: center;
 
-    width: 128px;
-    height: 128px;
+    width: 100px;
+    height: 100px;
+    margin: 14px;
   }
   button.end {
     margin-top: auto;
-    margin-bottom: 16px;
+    margin-bottom: 0;
   }
 
   icon {
@@ -89,6 +101,10 @@
         rgba(50, 50, 50, 0.9) 0%,
         rgba(29, 29, 29, 0.9) 100%
       );
+    }
+    profile {
+      margin-bottom: 0;
+      margin-right: 32px;
     }
     button {
       width: 64px;
