@@ -23,25 +23,28 @@ import spdy from "spdy";
 import express from "express";
 import cors from "cors";
 import fs from "fs";
-import path from "path";
+import { join } from "path";
 
 import { http_server as braidify } from "braidify";
 import { serverApi } from "./serverApi";
 
-const port = process.env.PORT || 3000;
+import { port } from "./config";
 
 const app = express()
   .use(cors({ origin: true }))
-  .use(express.static('public'))
+  .use(express.static("public"))
   .use(braidify);
 
 // Add our Ribbon request handlers
 serverApi(app);
 
+const certdir = join(__dirname, "..", "keys");
+const key = process.env.RIBBON_KEY || join(certdir, "localhost.key");
+const cert = process.env.RIBBON_CERT || join(certdir, "localhost.cert");
 const server = spdy.createServer(
   {
-    key: fs.readFileSync(path.join(__dirname, "..", "keys", "localhost.key")),
-    cert: fs.readFileSync(path.join(__dirname, "..", "keys", "localhost.cert")),
+    key: fs.readFileSync(key),
+    cert: fs.readFileSync(cert),
   },
   app
 );
