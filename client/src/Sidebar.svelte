@@ -53,6 +53,7 @@
     color: white;
     margin-bottom: 32px;
     text-align: center;
+    font-weight: bold;
   }
 
   button {

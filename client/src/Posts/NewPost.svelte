@@ -6,13 +6,19 @@
 
   let title;
   let body;
+
+  function handlePost() {
+    if (title && title !== "" && body && body !== "") {
+      dispatch("post", { title, body });
+    }
+  }
 </script>
 
 <section>
   <h1>New Post</h1>
   <input bind:value={title} placeholder="title" />
   <textarea bind:value={body} placeholder="post" />
-  <Button on:click={() => dispatch("post", { title, body })}>Post</Button>
+  <Button on:click={handlePost}>Post</Button>
 </section>
 
 <style>

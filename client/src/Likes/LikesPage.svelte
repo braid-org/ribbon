@@ -14,6 +14,7 @@
 
   function onLike({ detail }) {
     likes.append({ $link: detail.url });
+    newLikeVisible = false;
   }
 </script>
 
@@ -26,7 +27,7 @@
 
   {#if newLikeVisible}
     <div transition:slide>
-      <NewLike on:post={onLike} />
+      <NewLike on:like={onLike} />
     </div>
   {/if}
 

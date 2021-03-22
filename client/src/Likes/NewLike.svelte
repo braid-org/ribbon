@@ -7,6 +7,12 @@
   const dispatch = createEventDispatcher();
 
   let url;
+
+  function handleLike() {
+    if (url && url.match(/^https/)) {
+      dispatch("like", { url });
+    }
+  }
 </script>
 
 <section>
@@ -17,7 +23,7 @@
     </icon-wrapper>
     <input bind:value={url} placeholder="https://example.com/" />
   </div>
-  <Button on:click={() => dispatch("like", { url })}>Like</Button>
+  <Button on:click={handleLike}>Like</Button>
 </section>
 
 <style>

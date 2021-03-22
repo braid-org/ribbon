@@ -18,9 +18,6 @@
   async function onPost({ detail }) {
     const { title, body } = detail;
     records.append({ title, body });
-    // TODO: optimize by creating locally first, then skipping
-    // when server tells us it exists (instead of waiting for
-    // the server to tell us what we already know)
     newPostVisible = false;
   }
 </script>
