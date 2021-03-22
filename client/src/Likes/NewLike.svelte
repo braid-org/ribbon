@@ -9,7 +9,7 @@
   let url;
 </script>
 
-<bar>
+<section>
   <h1>New Like</h1>
   <div>
     <icon-wrapper>
@@ -18,7 +18,7 @@
     <input bind:value={url} placeholder="https://example.com/" />
   </div>
   <Button on:click={() => dispatch("like", { url })}>Like</Button>
-</bar>
+</section>
 
 <style>
   icon-wrapper {
@@ -27,14 +27,14 @@
     margin-right: -64px;
     right: 64px;
   }
-  bar {
+  section {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 
     border-radius: 16px;
-    margin: -32px 32px 32px 32px;
+    margin: 0 64px 32px 64px;
   }
 
   h1 {

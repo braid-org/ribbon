@@ -8,15 +8,15 @@
   let body;
 </script>
 
-<bar>
+<section>
   <h1>New Post</h1>
   <input bind:value={title} placeholder="title" />
   <textarea bind:value={body} placeholder="post" />
   <Button on:click={() => dispatch("post", { title, body })}>Post</Button>
-</bar>
+</section>
 
 <style>
-  bar {
+  section {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -24,7 +24,7 @@
 
     border-radius: 16px;
     min-width: 360px;
-    margin: -32px 32px 32px 32px;
+    margin: 0 32px 32px 32px;
   }
 
   h1 {

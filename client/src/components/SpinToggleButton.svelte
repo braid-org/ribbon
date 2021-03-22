@@ -4,8 +4,8 @@
   import FaPenSquare from "svelte-icons/fa/FaPenSquare.svelte";
 
   export let visible;
-
-  const highlight = "rgba(0, 0, 0, 0.25)";
+  export let icon = FaPenSquare;
+  export let highlight = "rgba(0, 0, 0, 0.25)";
 
   function toggleNewPost() {
     visible = !visible;
@@ -14,16 +14,19 @@
 
 <div>
   <SpinButton on:click={toggleNewPost}>
-    <Icon color={visible ? highlight : "white"}><FaPenSquare /></Icon>
+    <Icon color={visible ? highlight : "white"}>
+      <svelte:component this={icon} />
+    </Icon>
   </SpinButton>
   {#if !visible}
-    <lbl on:click={toggleNewPost}>New Post</lbl>
+    <lbl on:click={toggleNewPost}><slot /></lbl>
   {/if}
 </div>
 
 <style>
   div {
     display: flex;
+    margin-bottom: 8px;
   }
   lbl {
     display: flex;

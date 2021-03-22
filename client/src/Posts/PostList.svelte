@@ -16,6 +16,6 @@
     flex-direction: row-reverse;
     flex-wrap: wrap-reverse;
     justify-content: center;
-    margin: 48px;
+    margin: 16px 48px 48px 48px;
   }
 </style>
