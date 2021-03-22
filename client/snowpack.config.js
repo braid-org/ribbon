@@ -11,7 +11,7 @@ module.exports = {
   ],
   optimize: {
     bundle: true,
-    minify: true,
+    minify: false,
     target: "es2018",
   },
   alias: {
