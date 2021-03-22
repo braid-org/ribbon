@@ -16,7 +16,8 @@
     "quoteProps": "consistent"
   },
   "scripts": {
-    "start": "concurrently 'yarn workspace ribbon-server start' 'yarn workspace ribbon-client start'"
+    "start": "concurrently 'yarn workspace ribbon-server start' 'yarn workspace ribbon-client start'",
+    "build": "yarn workspace ribbon-client build && yarn workspace ribbon-server copy-client-public"
   },
   "scripts-comments": {
     "start": "Starts both the server (https://localhost:3000) and client (https://localhost:8080). You will need to enable chrome://flags/#allow-insecure-localhost or equivalent on your browser."

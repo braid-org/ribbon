@@ -6,7 +6,8 @@
   "license": "MIT",
   "scripts": {
     "start": "ts-node-dev src/server.ts",
-    "build": "webpack"
+    "build": "webpack",
+    "copy-client-public": "cp -r ../client/build/ ./public/"
   },
   "scripts-comments": {},
   "devDependencies": {
