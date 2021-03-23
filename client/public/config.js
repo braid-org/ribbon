@@ -1,0 +1,1 @@
+window.ribbon_config = {"origin": "https://localhost:3000"};

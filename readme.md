@@ -21,12 +21,42 @@ Next:
 yarn start
 ```
 
-This starts TWO servers simultaneously:
+This starts TWO dev servers simultaneously:
 
 ```
 http://localhost:3000  <-- Back-end Braid server
 http://localhost:8080  <-- Front-end Snowpack server
 ```
+
+If you edit any code in the client or server, the typescript will automatically re-compile and the browser should re-load so you can instantly see the change.
+
+## Running in Production
+
+You can also run Ribbon in a "production" environment, meaning you have your own domain certificate for TLS, and you want Ribbon to run on a single port.
+
+First, run `yarn build` in the project root. This will build the front-end code served by Snowpack into a javascript bundle (i.e. Snowpack is no longer needed) and then copy the bundle to the server's public directory.
+
+There are three environment variables you can use to configure Ribbon:
+
+```
+# The "origin" must be `https` and have a domain and port (of your choice):
+export RIBBON_ORIGIN=https://mydomain.com:4005
+
+# The "key" is the path to the file holding your domain's private key
+export RIBBON_KEY=/home/deploy/ribbon/server/keys/mydomain.key
+
+# The "cert" is the path to the file holding your domain's certificate
+export RIBBON_CERT=/home/deploy/ribbon/server/keys/mydomain.cert
+```
+
+With those env vars set, you need start ONLY the server (note that `yarn start` in the project root will start both the server and the client):
+
+```
+cd server # <-- important
+yarn start
+```
+
+You can check your config by visiting, e.g. `https://mydomain.com:4005/config.js`.
 
 ## Project Structure
 
@@ -72,9 +102,9 @@ Then add a post and you'll see the update come through in the command line.
 
 ### Setting Data
 
-Currently, Ribbon supports two types of operations:
+Currently, Ribbon supports only the 'append' operation on `posts` and `likes`:
 
-1. **Create a new blog Post:** send a regular PUT request to /post/N where N is the next available integer in the sequence of Post indices, and a new blog post will be created with that index.
-2. **Append to the list of blog Posts:** using the Braid protocol, send a PATCH request with a json range of `[-0:-0]` and a patch body with a new `link` to the post resource just created. The range `[-0:-0]` means "select from after the end to after the end" and replace nothing with something (a link to a blog post, in this case). This will update the list of links to posts to include a new link at the end.
+1. **Append to the list of blog Posts:** using the Braid protocol, send a PATCH request with a json range of `[-0:-0]` and a patch body with an object `{"title": "x", "body": "y"}` to the `posts` resource, e.g. `https://localhost:3000/author/default/posts`. The range `[-0:-0]` means "select from after the end to after the end" and replace nothing with something (a link to a blog post, in this case). This will update the list of links to posts to include a new link at the end.
+2. **Append to the list of Likes:** using the Braid protocol, send a PATCH request with a json range of `[-0:-0]` and a patch body with an object `{"$link": "https://..."}` to the `likes` resource, e.g. `https://localhost:3000/author/default/likes`. 
 
 Currently, no `Parents` or `Version` headers are used (specified in the Braid protocol).

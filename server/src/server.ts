@@ -28,10 +28,16 @@ import { join } from "path";
 import { http_server as braidify } from "braidify";
 import { serverApi } from "./serverApi";
 
-import { port } from "./config";
+import * as config from "./config";
+
+// Middleware to pass config to client
+function ribbonConfig(_, res) {
+  res.send(`window.ribbon_config = ${JSON.stringify(config)};`)
+}
 
 const app = express()
   .use(cors({ origin: true }))
+  .use('/config.js', ribbonConfig)
   .use(express.static("public"))
   .use(braidify);
 
@@ -49,10 +55,10 @@ const server = spdy.createServer(
   app
 );
 
-server.listen(port, (err) => {
+server.listen(config.port, (err) => {
   if (err) {
     console.error(err);
   } else {
-    console.log(`HTTP 2.0 server is listening on ${port} with TLS`);
+    console.log(`HTTP 2.0 server is listening on ${config.port} with TLS`);
   }
 });

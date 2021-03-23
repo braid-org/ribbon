@@ -7,7 +7,7 @@
   "scripts": {
     "start": "ts-node-dev src/server.ts",
     "build": "webpack",
-    "copy-client-public": "cp -r ../client/build/ ./public/"
+    "copy-client-public": "rsync -r ../client/build/ ./public"
   },
   "scripts-comments": {},
   "devDependencies": {
