@@ -1,5 +1,5 @@
-import { origin } from "./config";
-import { Resource, update } from "./resource";
+import { origin, populateInitialPosts } from "./config";
+import { Resource } from "./resource";
 import { makePosts, Post } from "./posts";
 import { makeLikes, addLikeToFeed, Like } from "./likes";
 import { FeedItem, makeFeed } from "./feed";
@@ -31,8 +31,14 @@ export const authors: Resource<Record<string, Author>> = {
   subscriptions: new Set(),
   value: {
     // Keys are author shortnames; we create a 'default' author
-    default: makeAuthor("default", initialDefaultPosts),
-    friend: makeAuthor("friend", initialFriendPosts),
+    default: makeAuthor(
+      "default",
+      populateInitialPosts ? initialDefaultPosts : []
+    ),
+    friend: makeAuthor(
+      "friend",
+      populateInitialPosts ? initialFriendPosts : []
+    ),
   },
   urlPrefix: origin,
 };

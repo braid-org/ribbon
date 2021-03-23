@@ -8,5 +8,7 @@ function getPortFromOrigin() {
 
 export const port = process.env.PORT || getPortFromOrigin() || 3000;
 
-export const origin =
-  process.env.RIBBON_ORIGIN || `https://localhost:${port}`;
+export const origin = process.env.RIBBON_ORIGIN || `https://localhost:${port}`;
+
+export const populateInitialPosts =
+  process.env.RIBBON_INITIAL_POSTS === "0" ? false : true;

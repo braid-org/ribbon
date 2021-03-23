@@ -36,7 +36,7 @@ You can also run Ribbon in a "production" environment, meaning you have your own
 
 First, run `yarn build` in the project root. This will build the front-end code served by Snowpack into a javascript bundle (i.e. Snowpack is no longer needed) and then copy the bundle to the server's public directory.
 
-There are three environment variables you can use to configure Ribbon:
+The following environment variables can be used to configure Ribbon:
 
 ```
 # The "origin" must be `https` and have a domain and port (of your choice):
@@ -47,6 +47,9 @@ export RIBBON_KEY=/home/deploy/ribbon/server/keys/mydomain.key
 
 # The "cert" is the path to the file holding your domain's certificate
 export RIBBON_CERT=/home/deploy/ribbon/server/keys/mydomain.cert
+
+# Tell Ribbon not to populate the initial welcome posts
+export RIBBON_INITIAL_POSTS=0
 ```
 
 With those env vars set, you need start ONLY the server (note that `yarn start` in the project root will start both the server and the client):
