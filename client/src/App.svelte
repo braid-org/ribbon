@@ -9,9 +9,15 @@
   import LikesPage from "./Likes/LikesPage.svelte";
   import SettingsPage from "./Settings/SettingsPage.svelte";
 
-  import { authorUrl } from "./Settings/config";
+  import { authorUrl, serverUrl } from "./Settings/config";
 
-  let feed, posts, likes;
+  let authors, feed, posts, likes;
+
+  $: {
+    if (authors) authors.cancel();
+    const url = $serverUrl + "/authors";
+    authors = new ArrayResource(url);
+  }
 
   $: {
     if (feed) feed.cancel();
@@ -46,7 +52,7 @@
   {:else if page === "likes"}
     <LikesPage {likes} />
   {:else if page === "settings"}
-    <SettingsPage on:done={() => (page = "posts")} />
+    <SettingsPage {authors} on:done={() => (page = "posts")} />
   {/if}
 </app>
 

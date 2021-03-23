@@ -3,6 +3,8 @@
   import Select from "svelte-select";
   import { author, customAuthorUrl } from "./config";
 
+  export let authors;
+
   const dispatch = createEventDispatcher();
   const CUSTOM_URL_LABEL = "Custom URL";
 
@@ -10,10 +12,13 @@
     return (shortname || CUSTOM_URL_LABEL).toUpperCase();
   }
 
-  const items = ["default", "friend", null].map((shortname) => ({
-    value: shortname,
-    label: authorName(shortname),
-  }));
+  let items;
+  $: {
+    items = [...$authors.map((a) => a.shortname), null].map((shortname) => ({
+      value: shortname,
+      label: authorName(shortname),
+    }));
+  }
 
   let selectedValue;
   $: selectedValue = $customAuthorUrl
