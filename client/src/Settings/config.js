@@ -16,7 +16,3 @@ export const authorUrl = derived(
     }
   }
 );
-
-authorUrl.subscribe(($authorUrl) => {
-  console.log("authorUrl", $authorUrl);
-});

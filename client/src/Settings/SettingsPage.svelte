@@ -1,65 +1,58 @@
 <script>
   import { createEventDispatcher } from "svelte";
+  import { get } from "svelte/store";
   import Select from "svelte-select";
-  import { author, customAuthorUrl } from "./config";
+  import { author, authorUrl, customAuthorUrl } from "./config";
+  import { capitalize } from "../utils/capitalize";
+  import { sanitize } from "../utils/sanitize";
 
   export let authors;
 
   const dispatch = createEventDispatcher();
-  const CUSTOM_URL_LABEL = "Custom URL";
-
-  function authorName(shortname) {
-    return (shortname || CUSTOM_URL_LABEL).toUpperCase();
-  }
 
   let items;
+  let selectedValue;
+
   $: {
-    items = [...$authors.map((a) => a.shortname), null].map((shortname) => ({
+    items = [...$authors.map((a) => a.shortname)].map((shortname) => ({
       value: shortname,
-      label: authorName(shortname),
+      label: shortname,
     }));
   }
 
-  let selectedValue;
-  $: selectedValue = $customAuthorUrl
-    ? { value: null, label: CUSTOM_URL_LABEL }
-    : { value: $author, label: authorName($author) };
+  $: selectedValue = { value: $author, label: $author };
 
-  let typedUrl;
-  $: typedUrl = $customAuthorUrl;
-
-  function handleSelect({ detail }) {
-    selectedValue = detail;
-    $author = selectedValue.value;
-    $customAuthorUrl = null;
+  function maybeCreateAuthor(shortname) {
+    const found = get(authors).find((author) => author.shortname === shortname);
+    if (shortname && !found) {
+      authors.append({ shortname });
+    }
   }
 
-  function handleTypedUrlChanged(event) {
-    console.log("changed", event.target.value);
-    $customAuthorUrl = typedUrl;
-    dispatch("done");
+  function handleSelect({ detail }) {
+    const shortname = sanitize(detail.value);
+    maybeCreateAuthor(shortname);
+    selectedValue = shortname;
+    $author = shortname;
   }
 </script>
 
 <page>
   <h1>Settings</h1>
   <setting>
-    <label for="typedUrl">Author</label>
+    <label for="typedUrl">Author Shortname</label>
     <Select
+      isCreatable={true}
       {items}
       {selectedValue}
       containerClasses="settings-select"
       on:select={handleSelect}
     />
-    {#if selectedValue.value === null}
-      <input
-        name="typedUrl"
-        class="big"
-        placeholder="https://example.com/author/default"
-        bind:value={typedUrl}
-        on:change={handleTypedUrlChanged}
-      />
-    {/if}
+    <info>Note: You can type to Create an author.</info>
+  </setting>
+  <setting>
+    <label for="authorUrl">Author URL</label>
+    <info><a href={$authorUrl}>{$authorUrl}</a></info>
   </setting>
 </page>
 
@@ -77,32 +70,26 @@
   setting {
     display: flex;
     flex-direction: column;
-    max-width: 300px;
+    width: 400px;
+  }
+
+  info {
+    margin-top: 8px;
+    color: var(--white);
+  }
+
+  info a {
+    color: var(--cherry);
+    text-shadow: 0px 0px 4px black;
   }
 
   :global(.settings-select) {
-    width: 300px;
+    width: 150px;
   }
 
   label {
     font-size: 24px;
     color: white;
-  }
-
-  input.big {
-    font-size: 24px;
-    line-height: 32px;
-
-    margin: 16px 0px;
-    padding: 8px 16px;
-
-    border: 2px solid white;
-    border-radius: 4px;
-    width: 300px;
-  }
-
-  bar {
-    display: block;
     margin-top: 24px;
   }
 </style>

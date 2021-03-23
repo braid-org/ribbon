@@ -8,7 +8,7 @@
   let body;
 
   function handlePost() {
-    if (title && title !== "" && body && body !== "") {
+    if ((title && title !== "") || (body && body !== "")) {
       dispatch("post", { title, body });
     }
   }
