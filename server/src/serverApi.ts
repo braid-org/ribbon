@@ -2,7 +2,7 @@ import { router as postsRouter } from "./posts";
 import { router as likesRouter } from "./likes";
 import { router as feedRouter } from "./feed";
 import { error } from "./utils";
-import { authors, Author } from "./authors";
+import { router as authorsRouter, authors, Author } from "./authors";
 
 /**
  * If an author's `shortname` is available as a param, add the
@@ -17,7 +17,8 @@ function withAuthor(request, response, next) {
 }
 
 export function serverApi(app) {
-  app.use("/author/:shortname", withAuthor, [
+  app.use(authorsRouter);
+  app.use("/author/:shortname" /* /posts | /likes | /feed */, withAuthor, [
     // We let each of the author-based routers have a go at
     // matching the URL, in turn.
     postsRouter,
