@@ -4,6 +4,7 @@
 
   export let title;
   export let body;
+  export let resource;
 
   function format(text) {
     const cleanText = DOMPurify.sanitize(text);
@@ -20,20 +21,29 @@
   }
 </script>
 
-<square class="soft-overflow centered" class:centered={!title || !body}>
-  {#if title}
-    <div class="title" class:rainbow={body} class:attention={!body}>
-      {@html format(title)}
-    </div>
+<container>
+  <square class="soft-overflow centered" class:centered={!title || !body}>
+    {#if title}
+      <div class="title" class:rainbow={body} class:attention={!body}>
+        {@html format(title)}
+      </div>
+    {/if}
+    {#if body}
+      <div class="body" class:paragraph={!title}>
+        {@html format(body)}
+      </div>
+    {/if}
+  </square>
+  {#if resource}
+    <div class="resource">{resource}</div>
   {/if}
-  {#if body}
-    <div class="body" class:paragraph={!title}>
-      {@html format(body)}
-    </div>
-  {/if}
-</square>
+</container>
 
 <style>
+  container {
+    display: block;
+    position: relative;
+  }
   square {
     display: flex;
     flex-direction: column;
@@ -84,7 +94,7 @@
   }
 
   .title.attention {
-    font-size: 36px;
+    font-size: 32px;
     line-height: 48px;
     color: var(--cherry);
   }
@@ -109,5 +119,20 @@
   .body.paragraph {
     text-indent: 1.2em;
     font-size: 15px;
+  }
+
+  .resource {
+    display: none;
+
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 10px;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    bottom: -8px;
+  }
+
+  container:hover .resource {
+    display: block;
   }
 </style>

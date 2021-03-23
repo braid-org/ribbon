@@ -6,7 +6,7 @@
 
 <content>
   {#each $records as { resource, post }}
-    <Post title={post.title} body={post.body} />
+    <Post title={post.title} body={post.body} {resource} />
   {/each}
 </content>
 
