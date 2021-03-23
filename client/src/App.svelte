@@ -1,4 +1,6 @@
 <script>
+  import { onMount } from "svelte";
+
   import { ArrayResource } from "./braid";
 
   import Background from "./Background.svelte";
@@ -9,7 +11,9 @@
   import LikesPage from "./Likes/LikesPage.svelte";
   import SettingsPage from "./Settings/SettingsPage.svelte";
 
+  import { author } from "./Settings/config";
   import { authorUrl, serverUrl } from "./Settings/config";
+  import { getHashParams } from "./utils/getHashParams";
 
   let authors, feed, posts, likes;
 
@@ -38,6 +42,15 @@
   }
 
   let page = "posts";
+
+  function handleHashParams(event) {
+    const params = getHashParams();
+    if (params.author) {
+      $author = params.author;
+    }
+  }
+
+  onMount(handleHashParams);
 </script>
 
 <Background />
@@ -55,6 +68,8 @@
     <SettingsPage {authors} on:done={() => (page = "posts")} />
   {/if}
 </app>
+
+<svelte:window on:hashchange={handleHashParams} />
 
 <style>
   app {
