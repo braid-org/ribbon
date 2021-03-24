@@ -4,14 +4,14 @@ import { origin } from "./config";
 import { Resource, update } from "./resource";
 import { Author, makeAuthor, asRecords } from "./makeAuthor";
 import { send, error } from "./utils";
-import { load } from "./persistence";
+import { saveAuthor, loadAuthors } from "./persistence";
 
 export const router = new Router();
 
 export const authors: Resource<Record<string, Author>> = {
   version: 0,
   subscriptions: new Set(),
-  value: load(),
+  value: loadAuthors(),
   urlPrefix: origin,
 };
 
@@ -58,7 +58,7 @@ router.put("/authors", async (request, response) => {
         } else if (shortname.length <= 1) {
           error(response, "author's shortname must be 2 or more characters");
         } else {
-          authors.value[shortname] = makeAuthor(shortname);
+          authors.value[shortname] = makeAuthor({ shortname });
 
           // Increment version & send an update to any subscribers
           update(authors, asRecords(origin));

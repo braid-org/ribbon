@@ -5,6 +5,7 @@ import { update } from "./resource";
 import { send, error } from "./utils";
 import { asRecords } from "./makePosts";
 import { postsPageHtml } from "./mf2html";
+import { saveAuthor } from "./persistence";
 
 export const router = new Router();
 
@@ -73,6 +74,9 @@ router.put("/posts", async (request, response) => {
 
   // Increment version & send an update to any subscribers
   update(posts, asRecords(posts.urlPrefix));
+
+  // Persistent storage
+  saveAuthor(request.author);
 
   // Acknowledge post(s) appended
   send(response, { success: true });
