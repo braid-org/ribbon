@@ -17,7 +17,6 @@ function resourceToInitial(resource) {
   return {
     value: resource.value,
     version: resource.version,
-    urlPrefix: resource.urlPrefix,
   };
 }
 
@@ -29,7 +28,6 @@ export function saveAuthor(author: Author) {
       shortname: author.shortname,
       posts: resourceToInitial(author.posts),
       likes: resourceToInitial(author.likes),
-      feed: resourceToInitial(author.feed),
     },
     null,
     2
