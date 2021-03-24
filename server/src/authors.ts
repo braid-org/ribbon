@@ -63,7 +63,7 @@ router.put("/authors", async (request, response) => {
           // Increment version & send an update to any subscribers
           update(authors, asRecords(origin));
 
-          // Acknowledge author(s) appended
+          // Announce author appended
           send(response, { success: true });
         }
       } else {

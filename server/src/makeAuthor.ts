@@ -25,10 +25,16 @@ export function makeAuthor(initial: InitialAuthor): Author {
   const likes = makeLikes(initial.likes, prefix);
   const feed = makeFeed(initial.feed, prefix);
 
-  // An author 'likes' his or her own posts by default
-  const likeMyself = { $link: `${prefix}/posts`, weight: 1 };
-  likes.value.push(likeMyself);
-  addLikeToFeed(likeMyself, feed);
+  if ((initial.likes?.value || []).length === 0) {
+    // An author 'likes' his or her own posts by default
+    const likeMyself = { $link: `${prefix}/posts`, weight: 1 };
+    likes.value.push(likeMyself);
+  }
+
+  // Subscribed to Liked things
+  likes.value.forEach((like) => {
+    addLikeToFeed(like, feed);
+  });
 
   return { shortname: initial.shortname, posts, likes, feed };
 }

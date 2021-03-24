@@ -14,10 +14,19 @@ router.get("/post/:index", (request, response) => {
   const idx = parseInt(request.params.index, 10);
   if (idx >= 0 && idx < posts.value.length) {
     const post = posts.value[idx];
-    send(response, {
+    const record = {
       resource: `${origin}${request.originalUrl}`,
       post,
-    });
+    };
+    if (request.subscribe) {
+      response.startSubscription();
+      response.sendVersion({
+        version: posts.version,
+        body: JSON.stringify(record),
+      });
+    } else {
+      send(response, record);
+    }
   } else {
     error(response, "out of range", 416);
   }
