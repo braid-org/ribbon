@@ -6,6 +6,7 @@ import { send, error } from "./utils";
 import { Post } from "./makePosts";
 import { FeedItem } from "./makeFeed";
 import { Like, asRecords } from "./makeLikes";
+import { saveAuthor } from "./persistence";
 
 export const router = new Router();
 
@@ -84,6 +85,9 @@ router.put("/likes", async (request, response) => {
 
   // Increment version & send an update to any subscribers
   update(likes, asRecords(likes.urlPrefix));
+  
+  // Persistent storage
+  saveAuthor(request.author);
 
   // Acknowledge like(s) appended
   send(response, { success: true });
