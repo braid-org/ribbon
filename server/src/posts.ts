@@ -3,6 +3,8 @@ import { Resource, update } from "./resource";
 import { send, error } from "./utils";
 import { Router } from "express";
 
+import { postsPageHtml } from "./mf2html";
+
 // Re-export 'Post' type
 import { Post } from "./initialPosts";
 export { Post } from "./initialPosts";
@@ -30,16 +32,10 @@ router.get("/post/:index", (request, response) => {
   const idx = parseInt(request.params.index, 10);
   if (idx >= 0 && idx < posts.value.length) {
     const post = posts.value[idx];
-
-    response.startSubscription();
-    response.sendVersion({
-      version: posts.version,
-      body: JSON.stringify({
-        resource: `${origin}${request.originalUrl}`,
-        post,
-      }),
-    });
-    // TODO: make "post" a resource that updates?
+    send(response, {
+      resource: `${origin}${request.originalUrl}`,
+      post
+    })
   } else {
     error(response, "out of range", 416);
   }
@@ -58,6 +54,21 @@ router.get("/posts", (request, response) => {
   } else {
     send(response, postsData);
   }
+});
+
+/**
+ * Support mf2 format for compatibility with IndieWeb
+ */
+router.get("/posts.html", (request, response) => {
+  const posts = request.author.posts;
+  const postsData = asRecords(posts.urlPrefix)(posts.value);
+  const html = postsPageHtml(
+    request.author.shortname,
+    posts.urlPrefix,
+    postsData
+  );
+  response.setHeader("content-type", "text/html");
+  response.end(html);
 });
 
 router.put("/posts", async (request, response) => {
