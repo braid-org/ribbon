@@ -1,3 +1,5 @@
+import { join } from "path";
+
 function getPortFromOrigin() {
   const origin = process.env.RIBBON_ORIGIN;
   if (origin) {
@@ -12,3 +14,5 @@ export const origin = process.env.RIBBON_ORIGIN || `https://localhost:${port}`;
 
 export const populateInitialPosts =
   process.env.RIBBON_INITIAL_POSTS === "0" ? false : true;
+
+export const dataDir = process.env.RIBBON_DATA || join(__dirname, "..", "data");

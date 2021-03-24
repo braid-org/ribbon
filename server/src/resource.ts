@@ -1,9 +1,16 @@
+export type InitialResource<T> = {
+  value?: T;
+  version?: number;
+  urlPrefix?: string;
+}
+
 export type Resource<T> = {
+  value: T;
   version: number;
   subscriptions: Set<any>;
-  value: T;
   urlPrefix: string;
 };
+
 
 export function update<T>(resource: Resource<T>, asRecords?) {
   resource.version++;

@@ -1,59 +1,17 @@
-import { origin, populateInitialPosts } from "./config";
-import { Resource, update } from "./resource";
-import { makePosts, Post } from "./posts";
-import { makeLikes, addLikeToFeed, Like } from "./likes";
-import { FeedItem, makeFeed } from "./feed";
-import { initialDefaultPosts, initialFriendPosts } from "./initialPosts";
-import { send, error } from "./utils";
 import { Router } from "express";
 
+import { origin } from "./config";
+import { Resource, update } from "./resource";
+import { Author, makeAuthor, asRecords } from "./makeAuthor";
+import { send, error } from "./utils";
+import { load } from "./persistence";
+
 export const router = new Router();
-
-export type Author = {
-  shortname: string;
-  posts: Resource<Array<Post>>;
-  likes: Resource<Array<Like>>;
-  feed: Resource<Array<FeedItem>>;
-};
-
-function makeAuthor(shortname, initialPosts = []) {
-  const prefix = `${origin}/author/${shortname}`;
-  const posts = makePosts(prefix, initialPosts);
-  const likes = makeLikes(prefix);
-  const feed = makeFeed(prefix);
-
-  // An author 'likes' his or her own posts by default
-  const likeMyself = { $link: `${prefix}/posts`, weight: 1 };
-  likes.value.push(likeMyself);
-  addLikeToFeed(likeMyself, feed);
-
-  return { shortname, posts, likes, feed };
-}
-
-const asRecords = (prefix: string) => (authors: Record<string, Author>) => {
-  return Object.keys(authors).map((shortname) => ({
-    resource: `${prefix}/author/${shortname}`,
-    shortname,
-    posts: { $link: `${prefix}/author/${shortname}/posts` },
-    likes: { $link: `${prefix}/author/${shortname}/likes` },
-    feed: { $link: `${prefix}/author/${shortname}/feed` },
-  }));
-};
 
 export const authors: Resource<Record<string, Author>> = {
   version: 0,
   subscriptions: new Set(),
-  value: {
-    // Keys are author shortnames; we create a 'default' author
-    default: makeAuthor(
-      "default",
-      populateInitialPosts ? initialDefaultPosts : []
-    ),
-    friend: makeAuthor(
-      "friend",
-      populateInitialPosts ? initialFriendPosts : []
-    ),
-  },
+  value: load(),
   urlPrefix: origin,
 };
 

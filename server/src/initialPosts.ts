@@ -1,7 +1,4 @@
-export type Post = {
-  title?: string;
-  body?: string;
-};
+import { Post } from "./makePosts";
 
 export const initialDefaultPosts: Array<Post> = [
   {

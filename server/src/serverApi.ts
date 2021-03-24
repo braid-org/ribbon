@@ -1,8 +1,9 @@
 import { router as postsRouter } from "./posts";
 import { router as likesRouter } from "./likes";
 import { router as feedRouter } from "./feed";
+import { router as authorsRouter, authors } from "./authors";
+import { Author } from "./makeAuthor";
 import { error } from "./utils";
-import { router as authorsRouter, authors, Author } from "./authors";
 
 /**
  * If an author's `shortname` is available as a param, add the

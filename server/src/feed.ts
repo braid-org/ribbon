@@ -1,23 +1,7 @@
-import { Resource } from "./resource";
-import { Post } from "./posts";
 import { send, error } from "./utils";
 import { Router } from "express";
 
 export const router = new Router();
-
-export type FeedItem = {
-  resource: string;
-  post: Post;
-};
-
-export function makeFeed(urlPrefix): Resource<Array<FeedItem>> {
-  return {
-    version: 0,
-    subscriptions: new Set(),
-    value: [],
-    urlPrefix,
-  };
-}
 
 router.get("/feed", (request, response) => {
   const feed = request.author.feed;

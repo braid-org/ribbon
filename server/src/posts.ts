@@ -1,31 +1,12 @@
-import { origin } from "./config";
-import { Resource, update } from "./resource";
-import { send, error } from "./utils";
 import { Router } from "express";
 
+import { origin } from "./config";
+import { update } from "./resource";
+import { send, error } from "./utils";
+import { asRecords } from "./makePosts";
 import { postsPageHtml } from "./mf2html";
 
-// Re-export 'Post' type
-import { Post } from "./initialPosts";
-export { Post } from "./initialPosts";
-
 export const router = new Router();
-
-export function makePosts(urlPrefix, initialPosts = []): Resource<Array<Post>> {
-  return {
-    version: 0,
-    subscriptions: new Set(),
-    value: [...initialPosts],
-    urlPrefix,
-  };
-}
-
-const asRecords = (prefix: string) => (posts: Array<Post>) => {
-  return posts.map((post, i) => ({
-    resource: `${prefix}/post/${i}`,
-    post,
-  }));
-};
 
 router.get("/post/:index", (request, response) => {
   const posts = request.author.posts;
@@ -34,8 +15,8 @@ router.get("/post/:index", (request, response) => {
     const post = posts.value[idx];
     send(response, {
       resource: `${origin}${request.originalUrl}`,
-      post
-    })
+      post,
+    });
   } else {
     error(response, "out of range", 416);
   }

@@ -1,32 +1,13 @@
-import { Resource, update } from "./resource";
-import { Post } from "./posts";
-import { send, error } from "./utils";
 import { Router } from "express";
-import { FeedItem } from "./feed";
 import { fetch } from "braidify";
 
+import { Resource, update } from "./resource";
+import { send, error } from "./utils";
+import { Post } from "./makePosts";
+import { FeedItem } from "./makeFeed";
+import { Like, asRecords } from "./makeLikes";
+
 export const router = new Router();
-
-export type Like = {
-  $link: string;
-  weight: number;
-};
-
-export function makeLikes(urlPrefix): Resource<Array<Like>> {
-  return {
-    version: 0,
-    subscriptions: new Set(),
-    value: [],
-    urlPrefix,
-  };
-}
-
-const asRecords = (prefix: string) => (likes: Array<Like>) => {
-  return likes.map((like, i) => ({
-    resource: `${prefix}/like/${i}`,
-    like,
-  }));
-};
 
 function addRecordToFeed(
   { resource, post }: { resource: string; post: Post },
