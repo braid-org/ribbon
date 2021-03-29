@@ -1,5 +1,5 @@
 <script>
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, onMount } from "svelte";
   import Button from "../components/Button.svelte";
 
   const dispatch = createEventDispatcher();
@@ -7,16 +7,21 @@
   let title;
   let body;
 
+  let inputEl;
+
   function handlePost() {
     if ((title && title !== "") || (body && body !== "")) {
       dispatch("post", { title, body });
     }
   }
+  onMount(() => {
+    inputEl.focus();
+  });
 </script>
 
 <section>
   <h1>New Post</h1>
-  <input bind:value={title} placeholder="title" />
+  <input bind:value={title} bind:this={inputEl} placeholder="title" />
   <textarea bind:value={body} placeholder="post" />
   <Button on:click={handlePost}>Post</Button>
 </section>
@@ -60,10 +65,5 @@
   textarea {
     width: 100%;
     height: 120px;
-  }
-
-  @media only screen and (max-width: 600px) {
-    bar {
-    }
   }
 </style>
