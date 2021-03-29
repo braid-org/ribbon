@@ -10,12 +10,33 @@
   import PostsPage from "./Posts/PostsPage.svelte";
   import LikesPage from "./Likes/LikesPage.svelte";
   import SettingsPage from "./Settings/SettingsPage.svelte";
+  import { notify, author, authorUrl, serverUrl } from "./Settings/config";
 
-  import { author } from "./Settings/config";
-  import { authorUrl, serverUrl } from "./Settings/config";
   import { getHashParams } from "./utils/getHashParams";
 
   let authors, feed, posts, likes;
+
+  let feedSub;
+  function createFeed(url) {
+    if (feed) feed.cancel();
+    if (feedSub) feedSub();
+
+    const newFeed = new ArrayResource(url);
+    feedSub = newFeed.subscribe((value) => {
+      console.log("feed value", value);
+      if (value.length && $notify) {
+        const noti = new Notification(
+          `You have ${value.length} new Braid messages!`
+        );
+        noti.addEventListener("click", () => {
+          console.log("clicked");
+          page = "feed";
+        });
+      }
+    });
+
+    return newFeed;
+  }
 
   $: {
     if (authors) authors.cancel();
@@ -24,9 +45,9 @@
   }
 
   $: {
-    if (feed) feed.cancel();
+    console.log("new feed resource");
     const url = $authorUrl + "/feed";
-    feed = new ArrayResource(url);
+    feed = createFeed(url);
   }
 
   $: {

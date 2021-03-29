@@ -16,3 +16,5 @@ export const authorUrl = derived(
     }
   }
 );
+
+export const notify = writable("notify", null);

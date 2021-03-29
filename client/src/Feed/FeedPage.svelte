@@ -4,6 +4,7 @@
   import { author } from "../Settings/config";
   import { capitalize } from "../utils/capitalize";
   import { possessive } from "../utils/possessive";
+  import Notifications from "./Notifications.svelte";
 
   export let records; // : Resource<Array<any>>
 
@@ -14,10 +15,12 @@
 {#if $connectState === "connected"}
   {#if $records.length === 0}
     <h1>Empty Feed</h1>
+    <Notifications />
     <h2>Try 'Liking' a Post and it'll show up here</h2>
   {:else}
     <h1>
       {#if $author}{possessive(capitalize($author))} {/if}Feed
+      <Notifications />
     </h1>
     <PostList {records} />
   {/if}
