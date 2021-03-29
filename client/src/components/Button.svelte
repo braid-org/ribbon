@@ -22,4 +22,7 @@
   button:hover {
     text-shadow: 1px 1px 1px black;
   }
+  button:focus {
+    box-shadow: 0 0 8px white;
+  }
 </style>
