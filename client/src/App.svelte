@@ -41,7 +41,7 @@
     likes = new ArrayResource(url);
   }
 
-  let page = "posts";
+  let page = "feed";
 
   function handleHashParams(event) {
     const params = getHashParams();
