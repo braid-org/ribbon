@@ -19,16 +19,21 @@ export type Author = {
   feed: Resource<Array<FeedItem>>;
 };
 
-export function makeAuthor(initial: InitialAuthor): Author {
+export function makeAuthor(
+  initial: InitialAuthor,
+  likeMyself: boolean = true
+): Author {
   const prefix = `${origin}/author/${initial.shortname}`;
   const posts = makePosts(initial.posts, prefix);
   const likes = makeLikes(initial.likes, prefix);
   const feed = makeFeed(initial.feed, prefix);
 
-  if ((initial.likes?.value || []).length === 0) {
-    // An author 'likes' his or her own posts by default
-    const likeMyself = { $link: `${prefix}/posts`, weight: 1 };
-    likes.value.push(likeMyself);
+  if (likeMyself) {
+    const myPostsUrl = `${prefix}/posts`;
+    const found = likes.value.find((like) => like.$link === myPostsUrl);
+    if (!found) {
+      likes.value.push({ $link: myPostsUrl, weight: 1 });
+    }
   }
 
   // Subscribed to Liked things
