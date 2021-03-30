@@ -47,9 +47,6 @@ export RIBBON_KEY=/home/deploy/ribbon/server/keys/mydomain.key
 
 # The "cert" is the path to the file holding your domain's certificate
 export RIBBON_CERT=/home/deploy/ribbon/server/keys/mydomain.cert
-
-# Tell Ribbon not to populate the initial welcome posts
-export RIBBON_INITIAL_POSTS=0
 ```
 
 With those env vars set, you need start ONLY the server (note that `yarn start` in the project root will start both the server and the client):
