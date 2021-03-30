@@ -5,7 +5,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "ts-node-dev src/server.ts",
+    "start": "RIBBON_PERSIST=0 ts-node-dev src/server.ts",
     "build": "webpack",
     "test": "jest",
     "copy-client-public": "rsync -r ../client/build/ ./public"
