@@ -3,7 +3,8 @@ import { Router } from "express";
 
 export const router = new Router();
 
-router.get("/feed", (request, response) => {
+router.get("/feed", getFeed);
+export function getFeed(request, response) {
   const feed = request.author.feed;
   const feedData = feed.value;
   if (request.subscribe) {
@@ -16,4 +17,4 @@ router.get("/feed", (request, response) => {
   } else {
     send(response, feedData);
   }
-});
+}

@@ -9,7 +9,8 @@ import { saveAuthor } from "./persistence";
 
 export const router = new Router();
 
-router.get("/post/:index", (request, response) => {
+router.get("/post/:index", getPost);
+export function getPost(request, response) {
   const posts = request.author.posts;
   const idx = parseInt(request.params.index, 10);
   if (idx >= 0 && idx < posts.value.length) {
@@ -30,9 +31,10 @@ router.get("/post/:index", (request, response) => {
   } else {
     error(response, "out of range", 416);
   }
-});
+}
 
-router.get("/posts", (request, response) => {
+router.get("/posts", getPosts);
+export function getPosts(request, response) {
   const posts = request.author.posts;
   const postsData = asRecords(posts.urlPrefix)(posts.value);
   if (request.subscribe) {
@@ -45,12 +47,13 @@ router.get("/posts", (request, response) => {
   } else {
     send(response, postsData);
   }
-});
+}
 
 /**
  * Support mf2 format for compatibility with IndieWeb
  */
-router.get("/posts.html", (request, response) => {
+router.get("/posts.html", getPostsHtml);
+export function getPostsHtml(request, response) {
   const posts = request.author.posts;
   const postsData = asRecords(posts.urlPrefix)(posts.value);
   const html = postsPageHtml(
@@ -60,9 +63,10 @@ router.get("/posts.html", (request, response) => {
   );
   response.setHeader("content-type", "text/html");
   response.end(html);
-});
+}
 
-router.put("/posts", async (request, response) => {
+router.put("/posts", putPost);
+export async function putPost(request, response) {
   const posts = request.author.posts;
   const patches = await request.patches();
   if (patches.length > 0) {
@@ -89,4 +93,4 @@ router.put("/posts", async (request, response) => {
 
   // Acknowledge post(s) appended
   send(response, { success: true });
-});
+}

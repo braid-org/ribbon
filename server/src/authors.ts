@@ -4,7 +4,7 @@ import { origin } from "./config";
 import { Resource, update } from "./resource";
 import { Author, makeAuthor, asRecords } from "./makeAuthor";
 import { send, error } from "./utils";
-import { saveAuthor, loadAuthors } from "./persistence";
+import { loadAuthors } from "./persistence";
 
 export const router = new Router();
 

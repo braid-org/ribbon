@@ -46,7 +46,8 @@ export function addLikeToFeed(like: Like, feed: Resource<Array<FeedItem>>) {
   });
 }
 
-router.get("/likes", (request, response) => {
+router.get("/likes", getLikes);
+export function getLikes(request, response) {
   const likes = request.author.likes;
   const likesData = asRecords(likes.urlPrefix)(likes.value);
   if (request.subscribe) {
@@ -59,9 +60,10 @@ router.get("/likes", (request, response) => {
   } else {
     send(response, likesData);
   }
-});
+}
 
-router.put("/likes", async (request, response) => {
+router.put("/likes", putLike);
+export async function putLike(request, response) {
   const likes = request.author.likes;
   const patches = await request.patches();
   if (patches.length > 0) {
@@ -85,10 +87,10 @@ router.put("/likes", async (request, response) => {
 
   // Increment version & send an update to any subscribers
   update(likes, asRecords(likes.urlPrefix));
-  
+
   // Persistent storage
   saveAuthor(request.author);
 
   // Acknowledge like(s) appended
   send(response, { success: true });
-});
+}
