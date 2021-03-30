@@ -6,6 +6,7 @@ import { send, error } from "./utils";
 import { Post } from "./makePosts";
 import { FeedItem } from "./makeFeed";
 import { Like, asRecords } from "./makeLikes";
+import { persistData } from "./config";
 import { saveAuthor } from "./persistence";
 
 export const router = new Router();
@@ -89,7 +90,7 @@ export async function putLike(request, response) {
   update(likes, asRecords(likes.urlPrefix));
 
   // Persistent storage
-  saveAuthor(request.author);
+  if (persistData) saveAuthor(request.author);
 
   // Acknowledge like(s) appended
   send(response, { success: true });

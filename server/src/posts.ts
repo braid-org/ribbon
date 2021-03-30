@@ -5,6 +5,7 @@ import { update } from "./resource";
 import { send, error } from "./utils";
 import { asRecords } from "./makePosts";
 import { postsPageHtml } from "./mf2html";
+import { persistData } from "./config";
 import { saveAuthor } from "./persistence";
 
 export const router = new Router();
@@ -89,7 +90,7 @@ export async function putPost(request, response) {
   update(posts, asRecords(posts.urlPrefix));
 
   // Persistent storage
-  saveAuthor(request.author);
+  if (persistData) saveAuthor(request.author);
 
   // Acknowledge post(s) appended
   send(response, { success: true });
