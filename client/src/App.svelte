@@ -45,7 +45,6 @@
   }
 
   $: {
-    console.log("new feed resource");
     const url = $authorUrl + "/feed";
     feed = createFeed(url);
   }
