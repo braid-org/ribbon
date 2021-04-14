@@ -22,6 +22,11 @@ import { port, key, cert } from "./config";
 
 export const server = spdy.createServer(
   {
+    spdy: {
+      protocols: ["h2"],
+      // plain: true,
+      // ssl: false,
+    },
     key: fs.readFileSync(key),
     cert: fs.readFileSync(cert),
   },
