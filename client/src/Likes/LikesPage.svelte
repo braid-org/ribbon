@@ -4,7 +4,7 @@
   import NewLike from "./NewLike.svelte";
   import SpinToggleButton from "../components/SpinToggleButton.svelte";
 
-  import { author } from "../Settings/config";
+  import { author } from "../config";
   import { capitalize } from "../utils/capitalize";
   import { possessive } from "../utils/possessive";
 

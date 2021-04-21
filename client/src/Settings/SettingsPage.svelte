@@ -1,14 +1,11 @@
 <script>
-  import { createEventDispatcher } from "svelte";
   import { get } from "svelte/store";
   import Select from "svelte-select";
-  import { author, authorUrl, customAuthorUrl } from "./config";
-  import { capitalize } from "../utils/capitalize";
+
+  import { author, authorUrl } from "../config";
   import { sanitize } from "../utils/sanitize";
-
+  
   export let authors;
-
-  const dispatch = createEventDispatcher();
 
   let items;
   let selectedValue;

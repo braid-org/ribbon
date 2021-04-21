@@ -1,10 +1,10 @@
 <script>
-  import FaBlog from "svelte-icons/fa/FaBlog.svelte";
-  import FaRegThumbsUp from "svelte-icons/fa/FaRegThumbsUp.svelte";
-  import FaPencilAlt from "svelte-icons/fa/FaPencilAlt.svelte";
+  import IoIosChatboxes from "svelte-icons/io/IoIosChatboxes.svelte";
+  // import FaRegThumbsUp from "svelte-icons/fa/FaRegThumbsUp.svelte";
+  // import FaPencilAlt from "svelte-icons/fa/FaPencilAlt.svelte";
   import GoPerson from "svelte-icons/go/GoPerson.svelte";
 
-  import { author } from "./Settings/config";
+  import { author } from "./config";
 
   export let page;
 
@@ -13,9 +13,9 @@
   };
 
   const pages = [
-    { id: "feed", icon: FaBlog },
-    { id: "posts", icon: FaPencilAlt },
-    { id: "likes", icon: FaRegThumbsUp },
+    { id: "chat", icon: IoIosChatboxes },
+    // { id: "posts", icon: FaPencilAlt },
+    // { id: "likes", icon: FaRegThumbsUp },
     { id: "settings", icon: GoPerson, end: true },
   ];
 </script>

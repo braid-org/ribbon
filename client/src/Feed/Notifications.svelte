@@ -1,6 +1,6 @@
 <script>
   import ToggleSwitch from "../components/ToggleSwitch.svelte";
-  import { notify, author } from "../Settings/config";
+  import { notify, author } from "../config";
 
   const hasBrowserSupport = "Notification" in window;
 

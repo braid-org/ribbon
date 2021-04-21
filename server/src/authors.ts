@@ -4,14 +4,13 @@ import { origin } from "./config";
 import { Resource, update } from "./resource";
 import { Author, makeAuthor, asRecords } from "./makeAuthor";
 import { send, error } from "./utils";
-import { loadAuthors } from "./persistence";
 
 export const router = new Router();
 
 export const authors: Resource<Record<string, Author>> = {
   version: 0,
   subscriptions: new Set(),
-  value: loadAuthors(),
+  value: {},
   urlPrefix: origin,
 };
 
@@ -22,8 +21,6 @@ router.get("/author/:shortname", (request, response) => {
     response.end(
       JSON.stringify({
         shortname: author.shortname,
-        posts: author.posts.value,
-        likes: author.likes.value,
       })
     );
   } else {

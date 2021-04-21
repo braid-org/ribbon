@@ -1,9 +1,11 @@
 <script>
   import { slide } from "svelte/transition";
+  
   import PostList from "../Posts/PostList.svelte";
-  import { author } from "../Settings/config";
+  import { author } from "../config";
   import { capitalize } from "../utils/capitalize";
   import { possessive } from "../utils/possessive";
+
   import Notifications from "./Notifications.svelte";
 
   export let records; // : Resource<Array<any>>
