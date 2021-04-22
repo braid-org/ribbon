@@ -8,13 +8,8 @@ cd $DIR/client
 
 yarn build && \
 rsync -azvP -e ssh build/* \
-  deploy@relm-alt:/var/www/html/ribbon/ \
+  deploy@relm-alt:/var/www/braidjournal.com/ \
+  --exclude config.js
   --delete
 
-cd $DIR/server
-
-yarn build && \
-rsync -azvP -e ssh dist/* \
-  deploy@relm-alt:/home/deploy/ribbon/ \
-  --delete
 
