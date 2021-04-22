@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import { origin } from "./config";
-import { update, Resource } from "./resource";
+import { append, Resource } from "./resource";
 import { send, error } from "./utils";
 
 export const router = new Router();
@@ -43,7 +43,8 @@ export async function putMessage(request, response) {
       if (patch.unit === "json" && patch.range === "[-0:-0]") {
         const { author, body } = JSON.parse(patch.content);
         if (author && body) {
-          messages.value.push({
+          // Increment version & send an update to any subscribers
+          append(messages, {
             author,
             body,
             timestamp: Math.floor(new Date().getTime() / 1000),
@@ -60,9 +61,6 @@ export async function putMessage(request, response) {
   } else {
     error(response, "patch required");
   }
-
-  // Increment version & send an update to any subscribers
-  update(messages);
 
   // Acknowledge post(s) appended
   send(response, { success: true });

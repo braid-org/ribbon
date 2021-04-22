@@ -50,18 +50,20 @@ export class Resource<T> {
     };
   }
 
-  setRaw(jsonValue: string) {
-    let parsed;
+  parse(jsonValue: string) {
     try {
-      parsed = JSON.parse(jsonValue);
+      return JSON.parse(jsonValue);
     } catch (err) {
-      throw new Error(`Unable to parse: ${jsonValue} (${err})`);
+      console.error("unable to parse:", jsonValue, "[error]:", err);
+      return undefined;
     }
-    this.setJson(parsed);
   }
 
-  setJson(value) {
-    this.store.set(value);
+  setRaw(jsonValue: string) {
+    const parsed = this.parse(jsonValue);
+    if (parsed) {
+      this.store.set(parsed);
+    }
   }
 
   applyPatches(patches) {
