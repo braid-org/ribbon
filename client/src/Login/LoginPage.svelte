@@ -1,8 +1,8 @@
 <script>
-  import { createEventDispatcher } from "svelte";
+  import { onMount, createEventDispatcher } from "svelte";
   import { get } from "svelte/store";
-  import { author, authorUrl, customAuthorUrl } from "../config";
-  import { capitalize } from "../utils/capitalize";
+
+  import { author } from "../config";
   import { sanitize } from "../utils/sanitize";
   import Button from "../components/Button.svelte";
 
@@ -31,6 +31,10 @@
     $author = shortname;
     dispatch("done");
   }
+
+  onMount(() => {
+    shortnameEl.focus();
+  });
 </script>
 
 <page>

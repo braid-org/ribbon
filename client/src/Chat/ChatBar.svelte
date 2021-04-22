@@ -1,5 +1,5 @@
 <script>
-  import { createEventDispatcher } from "svelte";
+  import { onMount, createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -17,6 +17,10 @@
       event.target.value = "";
     }
   }
+
+  onMount(() => {
+    inputEl.focus();
+  });
 </script>
 
 <container>
