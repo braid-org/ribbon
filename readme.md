@@ -1,6 +1,6 @@
 # Ribbon
 
-A microblog on the Braid. Demonstrates the [Braid-HTTP](https://braid.news) protocol.
+Chat on the Braid. Demonstrates the [Braid-HTTP](https://braid.org) protocol.
 
 ## Getting Started
 
