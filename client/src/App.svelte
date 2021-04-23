@@ -10,11 +10,39 @@
   import ChatPage from "./Chat/ChatPage.svelte";
 
   import SettingsPage from "./Settings/SettingsPage.svelte";
-  import { author, serverUrl } from "./config";
+  import { author, notify, serverUrl } from "./config";
 
   import { getHashParams } from "./utils/getHashParams";
 
   let authors, messages;
+
+  let seen = 0;
+
+  function updateSeen() {
+    seen = messages.length;
+  }
+
+  function handleNotify(messages) {
+    messages.subscribe((msgs) => {
+      if (document.hasFocus()) {
+        updateSeen();
+      } else if ($notify && msgs.length > seen) {
+        const count = msgs.length - seen;
+        const noti = new Notification(
+          `${count} new message${count === 1 ? "" : "s"}`
+        );
+        noti.addEventListener("click", () => {
+          page = "chat";
+          updateSeen();
+        });
+      }
+    });
+  }
+
+  function onChangeFocus(event) {
+    const hasFocus = document.hasFocus();
+    if (hasFocus) updateSeen();
+  }
 
   $: {
     if (authors) authors.cancel();
@@ -26,6 +54,7 @@
     if (messages) messages.cancel();
     const url = $serverUrl + "/messages";
     messages = new ArrayResource(url);
+    handleNotify(messages);
   }
 
   let page = "login";
@@ -58,7 +87,11 @@
   </app>
 {/if}
 
-<svelte:window on:hashchange={handleHashParams} />
+<svelte:window
+  on:hashchange={handleHashParams}
+  on:blur={onChangeFocus}
+  on:focus={onChangeFocus}
+/>
 
 <style>
   app {

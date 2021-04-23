@@ -1,3 +1,4 @@
+import { get } from "svelte/store";
 import { fetch } from "braidify";
 import { Resource } from "./Resource";
 
@@ -22,6 +23,10 @@ export class ArrayResource<T> extends Resource<Array<T>> {
         console.warn(`Can't apply patch; range unsupported`, patch);
       }
     }
+  }
+
+  get length() {
+    return get(this.store).length;
   }
 
   append(value: T) {
