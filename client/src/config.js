@@ -3,7 +3,7 @@ import { writable } from "svelte-local-storage-store";
 
 const DEFAULT_URL = window.ribbon_config.origin;
 
-export const author = writable("author", "default");
+export const author = writable("author", null);
 export const serverUrl = writable("serverUrl", DEFAULT_URL);
 export const customAuthorUrl = writable("customAuthorUrl", null);
 export const authorUrl = derived(
@@ -18,3 +18,4 @@ export const authorUrl = derived(
 );
 
 export const notify = writable("notify", null);
+export const notifyQuestion = writable("notifyQuestion", true);

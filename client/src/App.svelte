@@ -29,6 +29,9 @@
   }
 
   let page = "login";
+  $: {
+    if ($author) page = "chat";
+  }
 
   function handleHashParams(event) {
     const params = getHashParams();
@@ -61,12 +64,13 @@
   app {
     display: block;
     margin-left: 160px;
-    height: 100%;
+    height: 100vh;
   }
   @media only screen and (max-width: 600px) {
     app {
       margin-left: 0;
-      margin-top: 88px;
+      padding-top: 80px;
+      height: calc(100vh - 72px);
     }
   }
 </style>
