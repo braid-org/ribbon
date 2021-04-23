@@ -96,7 +96,7 @@
 <style>
   app {
     display: block;
-    margin-left: 160px;
+    margin: 8px 8px 0px 168px;
     height: 100vh;
   }
   @media only screen and (max-width: 600px) {

@@ -25,8 +25,7 @@
     position: relative;
     height: 72px;
 
-    margin-left: -8px;
-    margin-right: -8px;
+    margin: -8px -8px 8px -8px;
     background-color: rgba(255, 255, 255, 0.25);
     padding-left: 16px;
     padding-right: 16px;
