@@ -11,7 +11,7 @@
   };
 </script>
 
-<container on:mousedown|stopPropagation={toggle}>
+<container on:mousedown|preventDefault|stopPropagation={toggle}>
   <lbl>
     <slot>
       {#if value}On{:else}Off{/if}

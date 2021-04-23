@@ -1,13 +1,17 @@
 <script>
+  import { onMount } from "svelte";
+
   import ToggleSwitch from "../components/ToggleSwitch.svelte";
   import { notify } from "../config";
 
   const hasBrowserSupport = "Notification" in window;
 
-  let permission = Notification.permission;
+  let permission;
 
   let permitted = false;
-  $: permitted = permission === "granted";
+  $: if (permission !== undefined) {
+    permitted = permission === "granted";
+  }
 
   let denied = false;
   $: denied = permission === "denied";
@@ -18,12 +22,19 @@
       permission = await Notification.requestPermission();
     }
   }
+
+  onMount(() => {
+    permission = Notification.permission;
+  });
 </script>
 
 {#if hasBrowserSupport}
   <r-notifications>
     <ToggleSwitch value={$notify && (permitted || denied)} on:change={toggle}>
-      <div>Notifications are <b>{$notify && (permitted || denied) ? "ON" : "OFF"}</b></div>
+      <div>
+        Notifications are
+        <b>{$notify && (permitted || denied) ? "ON" : "OFF"}</b>
+      </div>
     </ToggleSwitch>
     {#if $notify && denied}
       <r-denied>
