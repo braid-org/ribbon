@@ -1,6 +1,6 @@
 <script>
   export let size = 64;
-  export let color = "white";
+  export let color = undefined;
 </script>
 
 <icon style="--size:{size}px; --color:{color};">

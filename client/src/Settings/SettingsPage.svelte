@@ -2,9 +2,10 @@
   import { get } from "svelte/store";
   import Select from "svelte-select";
 
-  import { author, authorUrl } from "../config";
+  import NotificationSetting from "../Notifications/NotificationSetting.svelte";
+  import { author } from "../config";
   import { sanitize } from "../utils/sanitize";
-  
+
   export let authors;
 
   let items;
@@ -37,7 +38,7 @@
 <page>
   <h1>Settings</h1>
   <setting>
-    <label for="typedUrl">Author Shortname</label>
+    <label for="author">Author Shortname</label>
     <Select
       isCreatable={true}
       {items}
@@ -48,8 +49,8 @@
     <info>Note: You can type to Create an author.</info>
   </setting>
   <setting>
-    <label for="authorUrl">Author URL</label>
-    <info><a href={$authorUrl}>{$authorUrl}</a></info>
+    <label for="notifications">Notifications</label>
+    <info><NotificationSetting /></info>
   </setting>
 </page>
 

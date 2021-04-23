@@ -3,24 +3,24 @@
 
   const dispatch = createEventDispatcher();
 
-  export let enabled = false;
+  export let value = false;
 
   const toggle = () => {
-    enabled = !enabled;
-    dispatch("change", enabled);
+    value = !value;
+    dispatch("change", value);
   };
 </script>
 
 <container on:mousedown|stopPropagation={toggle}>
-  <toggle class:enabled>
-    <knob class:enabled />
-  </toggle>
-
   <lbl>
-    <slot {enabled}>
-      {#if enabled}On{:else}Off{/if}
+    <slot>
+      {#if value}On{:else}Off{/if}
     </slot>
   </lbl>
+
+  <toggle class:enabled={value}>
+    <knob class:enabled={value} />
+  </toggle>
 </container>
 
 <style>
@@ -61,6 +61,6 @@
   }
 
   lbl {
-    margin-left: 12px;
+    margin-right: 12px;
   }
 </style>
